@@ -4,7 +4,7 @@
 
 ## 安装
 
-从 [GitHub Release v0.10.0](https://github.com/xiaoxinxy/myhome-studio/releases/tag/v0.10.0) 下载「我的家-0.10.0.apk」。Android8.0+，系统WebView需支持WebGL2。模型、照片、视频和交互资源随包提供，首次启动无需电脑或网络。原签名覆盖安装可保留本机方案；卸载或清除数据会删除本机数据，建议先导出JSON备份。
+从 [GitHub Release v0.10.0](https://github.com/xiaoxinxy/myhome-studio/releases/tag/v0.10.0) 下载「myhome-0.10.0.apk」（本机文件名为「我的家-0.10.0.apk」）。Android8.0+，系统WebView需支持WebGL2。模型、照片、视频和交互资源随包提供，首次启动无需电脑或网络。原签名覆盖安装可保留本机方案；卸载或清除数据会删除本机数据，建议先导出JSON备份。
 
 本机安装包在「安装包/」，APK与校验文件同时作为Release附件保存，二进制安装包不进入Git历史。
 
