@@ -1,0 +1,22 @@
+import {MovingBatch} from './MovingBatch';
+import {useEffect,useMemo,useRef} from 'react';
+import {useFrame} from '@react-three/fiber';
+import * as THREE from 'three';
+import {Box,Cylinder,Sphere} from './Primitives';
+import {StaticBatch} from './StaticBatch';
+import {Vehicle} from './Vehicles';
+import {Sign} from './Sign';
+import {createTraffic,advanceTraffic,trafficActors,type TrafficActor} from '../model/traffic';
+import {useHome} from '../store';
+import {walkMotion} from '../walkState';
+import {worldTargets,playTone,useInteractions} from '../interactions';
+import type {Dimensions} from '../model/types';
+function Actor({actor:a,index}:{actor:TrafficActor;index:number}){const root=useRef<THREE.Group>(null),left=useRef<THREE.Group>(null),right=useRef<THREE.Group>(null),person=a.kind==='person',color=['#a9b9ae','#b2a490','#718e98','#a5afb6','#b1a2a0','#799489'][index%6];
+ useFrame((state,dt)=>{const moving=advanceTraffic(a,dt,useHome.getState().walking?{x:walkMotion.x,z:walkMotion.z,radius:useInteractions.getState().driving?2.3:.2}:undefined);if(!root.current)return;root.current.position.set(a.x,person?.09:0,a.z);root.current.rotation.y=a.yaw+(person?Math.PI:0);root.current.visible=state.camera.position.distanceTo(root.current.position)<100;const step=moving?Math.sin(a.distance*8)*.42:0;if(left.current)left.current.rotation.x=step;if(right.current)right.current.rotation.x=-step;},-1);
+ const activate=()=>{a.pausedUntil=Date.now()+3000;if(!person)playTone('horn');useHome.setState({notice:person?'路人停下来向你问好，稍后继续赶路':'司机停下来示意你先走，三秒后继续行驶'});};
+ useEffect(()=>{trafficActors.set(a.id,a);worldTargets.set(a.id,{point:()=>a,label:person?'招呼路人':'向司机示意',activate});return()=>{trafficActors.delete(a.id);worldTargets.delete(a.id);};},[a]);
+ return <group ref={root} userData={{trafficId:a.id}} position={[a.x,0,a.z]} name={person?'走动的街坊':a.kind==='van'?'送货面包车':'行驶中的车辆'} onClick={e=>{if(e.delta<5){e.stopPropagation();activate();}}}>
+ {person?<><StaticBatch revision={color}><Sphere p={[0,1.25,0]} s={[.12,.15,.12]} c="#d9b18e"/><Sphere p={[0,1.35,.02]} s={[.13,.07,.12]} c="#514b42"/>{[-1,1].map(q=><Sphere key={q} p={[q*.043,1.27,-.112]} s={[.012,.016,.009]} c="#39413b"/>)}<Sphere p={[0,1.23,-.13]} s={[.018,.018,.023]} c="#c9a180"/><Box p={[0,.87,0]} s={[.3,.48,.23]} c={color}/>{[-1,1].map(s=><Cylinder key={s} p={[s*.2,.84,0]} r={.05} h={.43} c={color}/>)}{index%3===0&&<Box p={[.28,.51,0]} s={[.27,.34,.18]} c="#c9b08c"/>}</StaticBatch>{[-1,1].map(side=><group key={side} ref={side<0?left:right} position={[side*.08,.64,0]}><Cylinder p={[0,-.27,0]} r={.06} h={.54} c="#4b5e5c"/><Box p={[0,-.59,-.035]} s={[.13,.09,.2]} c="#595e53"/></group>)}</>:<><StaticBatch revision={a.kind+color}><Vehicle type={a.kind==='van'?'car':a.kind} color={color}/>{a.kind==='van'&&<><Box p={[0,1.02,-.35]} s={[1.65,.95,2.5]} c={color}/><Sign text="乡村配送" x={0} y={1.13} z={-1.61} rotation={Math.PI} w={1.2} h={.3}/></>}</StaticBatch>{['ebike','trike'].includes(a.kind)&&<StaticBatch revision="rider"><Sphere p={[0,1.45,-.05]} s={[.13,.15,.13]} c="#baad8b"/><Box p={[0,1.08,-.06]} s={[.35,.46,.24]} c={color}/>{[-1,1].map(side=><Box key={side} p={[side*.24,.86,.14]} s={[.12,.43,.13]} rotation={[-.4,0,0]} c="#52635e"/>)}</StaticBatch>}</>}
+ </group>;
+}
+export function RoadLife({d}:{d:Dimensions}){const actors=useMemo(()=>createTraffic(d),[d]);return <group name="街道车流与步行居民"><MovingBatch>{actors.map((a,i)=><Actor key={a.id} actor={a} index={i}/>)}</MovingBatch></group>;}

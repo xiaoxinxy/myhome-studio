@@ -1,0 +1,4 @@
+declare global{interface Window{HomeAndroid?:{saveFile:(filename:string,base64:string,mime:string)=>void};homeHandleBack?:()=>boolean;}}
+export const isNative=()=>typeof window!=='undefined'&&!!window.HomeAndroid;
+export async function saveFile(filename:string,blob:Blob){if(window.HomeAndroid){if(blob.size>30000000)throw Error('导出文件超过 30 MB，请减少物件后重试');const data=await new Promise<string>((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result).split(',')[1]);reader.onerror=reject;reader.readAsDataURL(blob);});window.HomeAndroid.saveFile(filename,data,blob.type||'application/octet-stream');return;}const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;a.click();setTimeout(()=>URL.revokeObjectURL(url),2000);}
+export const exportJson=(filename:string,data:unknown)=>saveFile(filename,new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));

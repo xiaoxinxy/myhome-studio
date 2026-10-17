@@ -1,0 +1,18 @@
+{
+  "version": "0.10.0",
+  "apkBytes": 8247617,
+  "sha256": "2997b66372ba67075d373ffce837d669bbc982ece40c231be63ce046653cf0ab",
+  "previousPackageSha256": "799a0b3073112576324e9fec3186e8bbf268fb43913ad04637079d1fc70bf98e",
+  "cleanup": "Old packages, caches and intermediate exports moved to Windows Recycle Bin; original photos, signing key and required development tools retained.",
+  "validation": {
+    "unitTests": "50/50 passed",
+    "productionBuild": "passed",
+    "apkSignatureAndAssets": "passed",
+    "repackagedApkOfflineBrowserTest": "1/1 passed; about 1.5 minutes"
+  },
+  "github": {
+    "repository": "xiaoxinxy/myhome-studio",
+    "visibility": "private",
+    "signingKeysIncluded": false
+  }
+}

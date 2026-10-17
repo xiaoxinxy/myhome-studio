@@ -1,0 +1,16 @@
+{
+  "count": 46,
+  "stats": {
+    "calls": 489,
+    "triangles": 254848,
+    "dpr": 0.75,
+    "geometries": 237,
+    "textures": 97
+  },
+  "point": {
+    "x": 834.3272007854998,
+    "y": 888.6114135691497,
+    "visible": true
+  },
+  "errors": []
+}

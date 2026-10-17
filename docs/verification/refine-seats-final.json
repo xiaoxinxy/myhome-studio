@@ -1,0 +1,9 @@
+{
+  "errors": [],
+  "seats": [
+    "chair",
+    "bed",
+    "kang"
+  ],
+  "actions": "UI sit, lie, stand restore passed"
+}

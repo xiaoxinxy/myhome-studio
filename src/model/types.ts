@@ -1,0 +1,12 @@
+export type Rect={x:number;z:number;w:number;d:number};
+export type Dimensions={width:number;depth:number;mainDepth:number;wingWidth:number;wingLength:number;wallHeight:number;roofRise:number};
+export type Room=Rect&{id:string;name:string;building:string;kind:'room'|'yard'|'shed'|'bath';confidence:'confirmed'|'estimated';note:string};
+export type Opening={start:number;width:number;bottom:number;height:number;kind:'door'|'window'|'gate'};
+export type Wall={id:string;building?:string;a:[number,number];b:[number,number];height:number;thickness:number;exterior:boolean;facing:'north'|'south'|'east'|'west';room?:string;openings:Opening[];boundary?:boolean};
+export type Building=Rect&{id:string;name:string;base:number;height:number;roof:'tile'|'metal';ridge:'x'|'z';rise:number};
+export type Layout={rooms:Room[];walls:Wall[];buildings:Building[];dividerZ:number;gateX:number;innerY:number;terraceY:number;terraceDepth:number};
+export type ItemDef={id:string;name:string;category:'庭院'|'卧室'|'客厅'|'厨房'|'卫浴';model:string;w:number;d:number;h:number;color:string;description:string};
+export type PlacedItem={id:string;type:string;room:string;x:number;z:number;rotation:number;scale:number;color:string;locked:boolean;unitPrice:number;note:string};
+export type Palette={facade:string;stripe:string;floor:string;interior:string;roof:string;metalRoof:string;frame:string;paving:string;brick:string;plant:string};
+export type Plan={id:string;name:string;version:2;layoutRevision?:number;furnishingRevision?:number;updated:string;dimensions:Dimensions;palette:Palette;style:string;items:PlacedItem[];roomColors:Record<string,{wall?:string;floor?:string}>};
+export type Layers={roofs:boolean;walls:boolean;plants:boolean;objects:boolean;labels:boolean;dimensions:boolean;solar:boolean;petMotion:boolean};

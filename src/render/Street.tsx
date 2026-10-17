@@ -1,0 +1,21 @@
+import {useMemo} from 'react';
+import * as THREE from 'three';
+import {Box,Cylinder,Sphere} from './Primitives';
+import {surface,glow} from './materials';
+import {villageRoads,onRoad,utilityPoles,streetEdges} from '../model/roads';
+import type {Dimensions} from '../model/types';
+const grateCanvas=document.createElement('canvas');grateCanvas.width=64;grateCanvas.height=32;const grateContext=grateCanvas.getContext('2d')!;grateContext.fillStyle='#829082';grateContext.fillRect(0,0,64,32);grateContext.fillStyle='#303f38';for(let i=0;i<6;i++)grateContext.fillRect(4+i*10,4,5,24);const grateTexture=new THREE.CanvasTexture(grateCanvas);grateTexture.colorSpace=THREE.SRGBColorSpace;const grate=new THREE.MeshStandardMaterial({map:grateTexture,roughness:.9});
+export function Street({d,lit}:{d:Dimensions;lit:boolean}){const roads=villageRoads(d),poles=utilityPoles(d),edges=streetEdges(d);const wires=useMemo(()=>{const points:number[]=[];for(let i=1;i<poles.length;i++){const a=poles[i-1],b=poles[i];if(a.z!==b.z)continue;for(const q of [-.44,0,.44])for(let k=0;k<12;k++){for(const t of [k/12,(k+1)/12])points.push(a.x+(b.x-a.x)*t,6.65-Math.sin(t*Math.PI)*.48,a.z+q);}}const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(points,3));return g;},[d]);return <group name="主街、丁字支巷与街道设施">
+ {roads.map(r=>{const horizontal=r.az===r.bz,length=Math.hypot(r.bx-r.ax,r.bz-r.az),earth=r.surface==='earth',width=r.width;return <group key={r.id}>
+ <Box p={[(r.ax+r.bx)/2,-.13,(r.az+r.bz)/2]} s={[horizontal?length:width,.22,horizontal?width:length]} shadow={false} m={surface(earth?'paving':'asphalt',earth?'#a09779':'#68716d',horizontal?length:width,horizontal?width:length)}/>
+
+ {horizontal&&r.id!=='market'&&Array.from({length:Math.floor(length/7)},(_,i)=><Box key={'mark'+i} p={[r.ax+i*7+2,-.012,r.az]} s={[2,.012,.07]} c="#d0cbb5" shadow={false}/>)}
+ {!earth&&Array.from({length:Math.floor(length/28)},(_,i)=><group key={'manhole'+i} position={[r.ax+(r.bx-r.ax)*(i+.4)/Math.floor(length/28),-.005,r.az+(r.bz-r.az)*(i+.4)/Math.floor(length/28)]}><Cylinder p={[0,0,0]} r={.34} h={.024} c="#46554e"/>{[-1,0,1].map(q=><Box key={q} p={[0,.02,q*.13]} s={[.48,.012,.025]} c="#77867b" shadow={false}/>)}</group>)}
+ </group>;})}
+ {edges.map((e,i)=><group key={'edge'+i}><Box p={[e.x,0,e.z]} s={[e.horizontal?e.length:1.25,.18,e.horizontal?1.25:e.length]} m={surface('paving','#a4ada2',e.horizontal?e.length:1.25,e.horizontal?1.25:e.length)} shadow={false}/>{e.curb&&<Box p={[e.x+(e.horizontal?0:-e.side*.64),.1,e.z+(e.horizontal?-e.side*.64:0)]} s={[e.horizontal?e.length:.14,.18,e.horizontal?.14:e.length]} m={surface('tile','#bbc0b4',e.horizontal?e.length:.14,.18)} shadow={false}/>}</group>)}
+ {roads.filter(r=>r.surface!=='earth').map(r=>{const horizontal=r.az===r.bz,length=Math.hypot(r.bx-r.ax,r.bz-r.az);return [-1,1].map(side=>Array.from({length:Math.floor(length/10)},(_,i)=>{const t=(i+.45)*10/length,x=r.ax+(r.bx-r.ax)*t+(horizontal?0:side*(r.width/2-.13)),z=r.az+(r.bz-r.az)*t+(horizontal?side*(r.width/2-.13):0);if(roads.some(other=>other.id!==r.id&&onRoad(x,z,other,.6)))return null;return <Box key={r.id+side+':'+i} p={[x,.012,z]} s={[horizontal?.7:.32,.025,horizontal?.32:.7]} m={grate} shadow={false}/>;}));})}
+ {poles.map((p,i)=><group key={i} position={[p.x,0,p.z]} name="水泥电线杆"><Cylinder p={[0,3.4,0]} r={.1} h={6.8} c="#b0b2a3"/><Box p={[0,6.5,0]} s={[.14,.12,1.2]} c="#75857d"/>{[-.44,0,.44].map(z=><group key={z}><Cylinder p={[0,6.67,z]} r={.07} h={.18} c="#c5c8b7"/><Cylinder p={[0,6.65,z]} r={.095} h={.04} c="#a6b6a5"/></group>)}<Box p={[.12,2,0]} s={[.16,.5,.3]} c="#87968c"/>{i%2===0&&<><Box p={[.42,5.4,0]} s={[.85,.06,.08]} c="#87968b"/><Box p={[.8,5.35,0]} s={[.32,.07,.3]} m={lit?glow:undefined} c="#c8d2bb"/></>}</group>)}
+ <lineSegments geometry={wires}><lineBasicMaterial color="#46534c"/></lineSegments>
+ {[-3,d.width+3].map(x=><group key={x} position={[x,.13,d.depth+1.7]}><Cylinder p={[0,.3,0]} r={.38} h={.6} c="#8b8c76"/><Sphere p={[0,.75,0]} s={[.48,.47,.48]} c="#70856b"/></group>)}
+ <Box p={[d.width/2,.13,d.depth+.7]} s={[4,.12,1.5]} m={surface('tile','#9caa9e',4,1.5)}/>
+ </group>;}

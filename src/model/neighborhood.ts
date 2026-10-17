@@ -1,0 +1,9 @@
+import type {Dimensions} from './types';
+export type Neighbor={id:string;x:number;z:number;w:number;depth:number;houseDepth:number;color:string;roof:string;height:number;style:number;name:string};
+export const villageReference={name:'山西襄汾丁村',url:'https://main.dmctv.com.cn/villages/14102310001/Index.html',note:'借鉴东西主街、南北巷和成组院落；以下住户为独立想象设计，不是实测复原'};
+export function neighborhood(d:Dimensions):Neighbor[]{return [...[-1,1].flatMap(side=>Array.from({length:6},(_,i)=>{const style=i+(side===1?6:0),column=i%3,row=Math.floor(i/3),w=d.width*(.93+(style%4)*.035),depth=d.depth*(.9+(style%4)*.03),gate=d.depth+.6+row*62;return{id:'neighbor-'+style,x:side===-1?-4-w-column*31:d.width+4+column*31,z:gate-depth,w,depth,houseDepth:5+(style%3)*.35,color:['#c6b79d','#e0d8c4','#b9c4b5','#bfa597','#c9c9b9','#b4bfbe','#c2ae94','#d7c8b5','#b7c5bf','#ccbaac','#c4c2ab','#b8c1c4'][style],roof:['#9f7457','#647e80','#aa8264','#7c6660','#667b70','#839499','#9b7154','#737d79','#697f85','#a1846a','#8e8270','#6b8781'][style],height:3.05+(style%3)*.12,style,name:['木工家的砖瓦院','花草爱好者的白墙院','书香木廊院','农具收纳院','茶香绿窗院','新式平顶院','两代同住院','蓝顶菜园院','果农家的小院','陶艺工作院','老年人的暖炕院','年轻人的书房院'][style]};})),...publicPlaces(d)];}
+export function neighborHouse(n:Neighbor){return{x:n.x+.4,z:n.z+.4,w:n.w-.8,d:n.houseDepth};}
+export function streetBounds(d:Dimensions){return{minX:-103,maxX:d.width+103,minZ:0,maxZ:d.depth+158};}
+
+export function publicPlaces(d:Dimensions):Neighbor[]{return ['桥头小卖铺','村民服务中心 · 村支部','村卫生所','老街理发店'].map((name,i)=>({id:'community-'+i,name,x:[-59,-28,28,59][i],z:d.depth+[89,86,88,93][i],w:[23,24,24,20][i],depth:[19.6,22.6,20.6,15.6][i],houseDepth:[9.4,12.8,12,9.2][i],height:[3.05,3.65,3.25,2.85][i],style:12+i,color:['#d7c4a7','#d6d7ca','#d8e3dc','#c1b4a3'][i],roof:['#9b6b52','#637f81','#7b9490','#a98765'][i]}));}
+export function ruralPlots(d:Dimensions){return [{id:'field',name:'田间菜地',x:-55,z:d.depth+123,w:44,d:30},{id:'orchard',name:'村南果园',x:5,z:d.depth+123,w:56,d:30}];}

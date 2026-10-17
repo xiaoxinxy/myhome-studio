@@ -1,0 +1,8 @@
+{
+  "version": "0.10.0",
+  "status": 200,
+  "bytes": 8251713,
+  "sha256": "799a0b3073112576324e9fec3186e8bbf268fb43913ad04637079d1fc70bf98e",
+  "downloadMatchesSignedApk": true,
+  "phase": "pre-cleanup historical verification"
+}
