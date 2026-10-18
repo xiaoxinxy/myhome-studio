@@ -47,3 +47,14 @@
 .community-card button:disabled {opacity:.45;cursor:default;}
 
 .community-card p,.community-card small {width:100%;}
+
+/* World travel keeps the movement surface clear. */
+.world-map-toggle{position:absolute;right:20px;top:242px;z-index:5;pointer-events:auto;background:#fffef4ed;border-radius:8px;padding:8px 12px;font-size:11px}.world-status{position:absolute;top:143px;left:20px;z-index:4;background:#fffef4e8;border-radius:8px;padding:8px 12px;color:#354f42;font-size:11px;max-width:260px}.world-status span{color:#a75639}.world-status small{display:block;margin-top:3px}.walk-map.expanded{top:88px;right:20px;width:min(65vw,720px);height:min(65vh,550px);z-index:4;background:#fffef4f5}.walk-nearby{max-width:calc(100% - 40px);flex-wrap:wrap;justify-content:center}.walk-actions select[aria-label="村庄目的地"]{max-width:150px}@media(max-width:760px){.world-map-toggle{right:12px;top:250px}.world-status{top:132px;left:12px;max-width:190px;font-size:10px}.walk-map.expanded{top:165px;right:12px;width:calc(100vw - 24px);height:42vh}.walk-actions{flex-wrap:wrap;padding-right:0;gap:3px}.walk-actions select[aria-label="村庄目的地"]{max-width:100px}.walk-nearby{bottom:64px;gap:3px}.walk-nearby button{min-height:34px}.drive-panel{bottom:65px;max-width:70%;gap:5px;padding:8px}.drive-panel span{width:100%;text-align:center}.drive-panel strong{font-size:17px}}
+
+.walk-environment{position:absolute;right:20px;top:285px;pointer-events:auto;z-index:6}.walk-environment .environment-popover{bottom:auto;top:100%;right:0;left:auto;max-width:calc(100vw - 30px)}.walk-environment .environment-controls>summary{background:#fffef4ed;border-radius:8px;padding:9px;font-size:11px}@media(max-width:760px){.walk-environment{top:286px;right:12px}.walk-environment .environment-controls summary small{display:none}}
+
+@media(max-width:760px){.walk-environment .environment-popover{position:fixed;top:160px;left:15px;right:15px;bottom:auto;width:auto;max-height:calc(100dvh - 235px);overflow:auto}.walk-environment .environment-controls{min-width:0}.walk-environment .environment-controls summary{font-size:10px;gap:5px}.walk-actions button{flex-shrink:0}}
+
+.environment-heading button{min-width:28px;height:28px;font-size:21px;border-radius:6px;background:#edf0e5;margin-top:-5px;color:#425b4d}.environment-heading{align-items:center;gap:10px}
+
+@media(max-width:760px){.walk-actions select[aria-label="村庄目的地"]{width:92px;max-width:92px;flex-shrink:0}.walk-actions select[aria-label="漫游画质"]{width:60px;max-width:60px;flex-shrink:0}.walk-actions button[aria-label="回到门口"]{width:36px;min-width:36px;padding:9px;font-size:0}.walk-actions button[aria-label="回到门口"] svg{width:16px;height:16px;flex-shrink:0}}

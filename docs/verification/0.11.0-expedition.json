@@ -1,0 +1,55 @@
+{
+  "errors": [],
+  "landmarks": [
+    {
+      "id": "pyramid",
+      "stats": {
+        "calls": 21,
+        "triangles": 32496,
+        "dpr": 0.75,
+        "geometries": 231,
+        "textures": 109
+      }
+    },
+    {
+      "id": "eiffel",
+      "stats": {
+        "calls": 12,
+        "triangles": 19248,
+        "dpr": 0.75,
+        "geometries": 231,
+        "textures": 110
+      }
+    },
+    {
+      "id": "pisa",
+      "stats": {
+        "calls": 27,
+        "triangles": 56160,
+        "dpr": 0.75,
+        "geometries": 231,
+        "textures": 112
+      }
+    },
+    {
+      "id": "louvre",
+      "stats": {
+        "calls": 30,
+        "triangles": 29520,
+        "dpr": 0.75,
+        "geometries": 231,
+        "textures": 112
+      }
+    },
+    {
+      "id": "tiananmen",
+      "stats": {
+        "calls": 29,
+        "triangles": 20520,
+        "dpr": 0.75,
+        "geometries": 231,
+        "textures": 112
+      }
+    }
+  ]
+}

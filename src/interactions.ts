@@ -1,10 +1,13 @@
 import {create} from 'zustand';
+import {useHome} from './store';
 import {walkMotion,clearWalkInput} from './walkState';
 import {buildLayout,elevation} from './model/layout';
 import {catalog} from './model/catalog';
 import {worldRoom} from './model/village';
 import {makeWalkWorld,walkable,walkHeight,cameraBoom} from './model/walking';
 import {vehicleState,vehicles} from './model/vehicle';
+import {trafficActors,type TrafficActor} from './model/traffic';
+import {alarm,strike,reactions} from './model/encounters';
 import type {Plan,PlacedItem} from './model/types';
 export type ItemInteraction={open?:boolean;lights?:boolean;petUntil?:number;waterUntil?:number;shakeUntil?:number;hornUntil?:number};
 export const useInteractions=create<{items:Record<string,ItemInteraction>;doors:Record<string,boolean>;sitting:boolean;driving:string|null;vehicleEpoch:number;act:(id:string,patch:ItemInteraction)=>void;door:(id:string,open:boolean)=>void}>(set=>({items:{},doors:{},sitting:false,driving:null,vehicleEpoch:0,act:(id,patch)=>set(s=>({items:{...s.items,[id]:{...s.items[id],...patch}}})),door:(id,open)=>set(s=>({doors:{...s.doors,[id]:open}}))}));
@@ -15,7 +18,10 @@ export function playTone(kind:'horn'|'cat'|'dog'){
  const context=new AudioContext(),osc=context.createOscillator(),gain=context.createGain();osc.connect(gain);gain.connect(context.destination);gain.gain.setValueAtTime(.045,context.currentTime);gain.gain.exponentialRampToValueAtTime(.001,context.currentTime+.38);osc.type=kind==='horn'?'sawtooth':'sine';osc.frequency.setValueAtTime(kind==='horn'?240:kind==='cat'?650:170,context.currentTime);osc.frequency.exponentialRampToValueAtTime(kind==='cat'?280:kind==='dog'?90:210,context.currentTime+.3);osc.start();osc.stop(context.currentTime+.4);osc.onended=()=>void context.close();
 }
 
-export const worldTargets=new Map<string,{point:()=>{x:number;z:number};label:string;activate:()=>void}>();
+export const worldTargets=new Map<string,{point:()=>{x:number;z:number};label:string;activate:()=>void;actions?:{label:string;activate:()=>void}[]}>();
+export function hitPerson(id:string,p:{x:number;z:number}){if(!strike(id,walkMotion,p)){return false;}clearWalkInput();notifyEncounter('挥拳击中，路人踉跄后会逃开；周围的人也会受惊');for(const a of trafficActors.values())if(a.id!==id&&a.kind==='person'&&Math.hypot(a.x-p.x,a.z-p.z)<8){const r={hitUntil:0,fleeUntil:Date.now()+7000,sourceX:walkMotion.x,sourceZ:walkMotion.z};reactions.set(a.id,r);}return true;}
+function notifyEncounter(text:string){useHome.setState({notice:text});}
+export function takeTrafficVehicle(plan:Plan,a:TrafficActor){if(a.kind==='person'||Math.hypot(walkMotion.x-a.x,walkMotion.z-a.z)>3.4)return false;if(!a.claimed&&Math.abs(a.velocity||0)>.5){a.pausedUntil=Date.now()+4000;a.velocity=0;notifyEncounter('车辆已停下，再次点击即可夺车驾驶');return false;}const theft=!a.claimed;const f:PlacedItem={id:a.id,type:a.kind==='van'?'car':a.kind,room:'forecourt',x:a.x,z:a.z,rotation:-a.yaw*180/Math.PI,scale:1,color:'#8a9e98',locked:false,unitPrice:0,note:''};const v=vehicleState(f);v.x=a.x;v.z=a.z;v.yaw=a.yaw;if(!startDriving(plan,f))return false;a.claimed=true;if(theft)alarm(a,[...trafficActors.values()].filter(p=>p.kind==='person'));notifyEncounter(theft?'已接管车辆；附近路人受惊，警觉会随时间降低。F 可下车':'已上车；F 可下车，停放位置在本次会话中保留');return true;}
 
 export function startDriving(plan:Plan,f:PlacedItem){if(Math.hypot(walkMotion.x-f.x,walkMotion.z-f.z)>3.4&&!vehicles.has(f.id))return false;const v=vehicleState(f);if(Math.hypot(walkMotion.x-v.x,walkMotion.z-v.z)>3.4)return false;sitDown(false);walkMotion.crouchUntil=0;walkMotion.petting=false;clearWalkInput();v.speed=0;walkMotion.x=v.x;walkMotion.z=v.z;walkMotion.yaw=v.yaw+Math.PI;useInteractions.setState({driving:f.id});return true;}
 export function stopDriving(plan:Plan,force=false){const id=useInteractions.getState().driving;if(!id)return true;const v=vehicles.get(id);if(!v){useInteractions.setState({driving:null});return true;}const f=plan.items.find(f=>f.id===id),c=catalog.find(c=>c.id===(f?.type||v.type))!,world=makeWalkWorld(plan);clearWalkInput();v.speed=0;const candidates=[];for(const side of [-1,1])for(const length of [0,-.4,.4]){const x=v.x+Math.cos(v.yaw)*side*(c.w/2+.55)+Math.sin(v.yaw)*length,z=v.z-Math.sin(v.yaw)*side*(c.w/2+.55)+Math.cos(v.yaw)*length;if(walkable(x,z,world))candidates.push({x,z});}if(!candidates.length&&!force)return false;const p=candidates[0]||{x:plan.dimensions.width/2,z:plan.dimensions.depth-1.7};Object.assign(walkMotion,p,{y:walkHeight(p.x,p.z,world)});useInteractions.setState(s=>({driving:null,vehicleEpoch:s.vehicleEpoch+1}));return true;}

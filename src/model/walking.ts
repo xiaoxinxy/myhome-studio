@@ -1,4 +1,5 @@
 import {trafficActors} from './traffic';
+import {landmarks,landmarkSolids} from './expedition';
 import {buildLayout,elevation,roomInnerRect} from './layout';
 import {neighborhood,neighborHouse,streetBounds,ruralPlots} from './neighborhood';
 import {village,villageRoomAt} from './village';
@@ -47,7 +48,7 @@ export function makeWalkWorld(plan:Plan,street=true,closedDoors:string[]=[]):Wal
  fence(c.x,c.z+.2,c.x+c.w,c.z+.2,2.4);fence(c.x+c.w-.14,c.z,c.x+c.w-.14,c.z+c.d,2.4);fence(c.x,c.z+c.d,c.x+c.w,c.z+c.d,1.05);
  for(const b of y.beds)obstacles.push({x:b.x+b.w/2,z:b.z+b.d/2,w:b.w,d:b.d,cos:1,sin:0,base:0,height:.4});
  }
- if(street)layout.buildings.push(...village(plan.dimensions).flatMap(h=>h.layout.buildings));
+ if(street){layout.buildings.push(...village(plan.dimensions).flatMap(h=>h.layout.buildings));for(const b of landmarkSolids())obstacles.push({itemId:b.id,x:b.x,z:b.z,w:b.w,d:b.d,cos:1,sin:0,base:0,height:b.h});}
  const doorSteps=layout.walls.filter(w=>w.building==='main'&&w.exterior&&w.facing==='south').flatMap(w=>w.openings.filter(o=>o.kind==='door').map(o=>({x:w.a[0]+o.start+o.width/2,w:o.width>1.5?2.6:o.width+.3})));return{plan,layout,segments,obstacles,street,doorSteps};
 }
 export function distanceToSegment(x:number,z:number,s:Segment){const dx=s.bx-s.ax,dz=s.bz-s.az,t=Math.max(0,Math.min(1,((x-s.ax)*dx+(z-s.az)*dz)/(dx*dx+dz*dz)));return Math.hypot(x-s.ax-dx*t,z-s.az-dz*t);}
@@ -81,6 +82,7 @@ export function moveWalker(p:WalkPoint,dx:number,dz:number,world:WalkWorld):Walk
  return{x,z};
 }
 export function walkSpawn(world:WalkWorld,roomId?:string|null):WalkPoint {
+ const landmark=world.street&&landmarks.find(l=>l.id===roomId);if(landmark)return {...landmark.arrival};
  const home=world.street?village(world.plan.dimensions).find(h=>h.n.id===roomId):undefined;if(home)return{x:home.n.x+home.n.w/2,z:home.n.z+home.n.depth-1.3};
  const plot=world.street?ruralPlots(world.plan.dimensions).find(p=>p.id===roomId):undefined;if(plot)return{x:plot.x+plot.w/2,z:plot.z+2};
  if(roomId==='southyard'&&world.street){const y=southYard(world.plan.dimensions);return{x:y.w/2-.5,z:y.z+.8};}
