@@ -1,10 +1,10 @@
 # 我的家 · 院落与村庄工作室
 
-根据自家照片与草图制作的3D院落、村庄生活和装修预览应用。当前版本 **0.12.0**，独立离线安卓App；此仓库为私人项目，包含现场照片与视频。
+根据自家照片与草图制作的3D院落、村庄生活和装修预览应用。当前版本 **0.12.1**，独立离线安卓App；此仓库为私人项目，包含现场照片与视频。
 
 ## 安装
 
-从 [GitHub Release v0.12.0](https://github.com/xiaoxinxy/myhome-studio/releases/tag/v0.12.0) 下载「myhome-0.12.0.apk」（本机文件名为「我的家-0.12.0.apk」）。Android8.0+，系统WebView需支持WebGL2。模型、照片、视频和交互资源随包提供，首次启动无需电脑或网络。原签名覆盖安装可保留本机方案；卸载或清除数据会删除本机数据，建议先导出JSON备份。
+从 [GitHub Release v0.12.1](https://github.com/xiaoxinxy/myhome-studio/releases/tag/v0.12.1) 下载「myhome-0.12.1.apk」（本机文件名为「我的家-0.12.1.apk」）。Android8.0+，系统WebView需支持WebGL2。模型、照片、视频和交互资源随包提供，首次启动无需电脑或网络。原签名覆盖安装可保留本机方案；卸载或清除数据会删除本机数据，建议先导出JSON备份。
 
 本机安装包在「安装包/」，APK与校验文件同时作为Release附件保存，二进制安装包不进入Git历史。
 
@@ -76,13 +76,13 @@ npm run android:build
 
 ## 运行与性能
 
-均衡画质保留基础纹理，精细画质提供完整法线、粗糙度细节与实时阴影；低性能设备可选择流畅优先。场景启动时准备材质，漫游交互只检查附近提示；移动中固定绘图分辨率，停稳后再按预算调整，避免行走时反复重建缓冲区。分块裁剪、遮挡和静态/动态合批减少提交量；模型导出时会恢复完整源网格。性能记录来自桌面软件渲染，不代表安卓真机帧率。
+均衡画质保留基础纹理，精细画质提供完整法线、粗糙度细节与实时阴影；低性能设备可选择流畅优先。场景启动时准备材质，漫游交互只检查附近提示；移动中固定绘图分辨率，停稳后再按预算调整，避免行走时反复重建缓冲区。分块裁剪、遮挡和静态/动态合批减少提交量；模型导出时会恢复完整源网格。本次驾驶记录使用本机默认图形后端，不代表安卓真机帧率。
 
 ## 模型参考与验证
 
 自家布局以现场资料与使用者确认信息为准；邻居和公共设施为参考实景的设计，非实测村庄复原。街巷参考[山西襄汾丁村](https://main.dmctv.com.cn/villages/14102310001/Index.html)；场所参考[杂货铺](https://smiletaiwan.cw.com.tw/article/510)、[老理发店](https://www.cpanet.cn/detail_picdetail_132829.html)、[村卫生室](https://www.shsys.moa.gov.cn/ncggfw/202001/t20200109_6334574.htm)。网上照片未作为在线依赖打包。
 
-[0.12.0验证记录](docs/verification/verification-0.12.0.md)包含71项逻辑测试、场所/开放世界流程、分批浏览器回归和最终APK断网验证；后续玩法和当前原型的边界见 [开放世界扩展建议](docs/OPEN_WORLD_ROADMAP.md)。
+[0.12.1验证记录](docs/verification/verification-0.12.1.md)包含80项逻辑测试、场所/开放世界流程、分批浏览器回归和最终APK断网验证；后续玩法和当前原型的边界见 [开放世界扩展建议](docs/OPEN_WORLD_ROADMAP.md)。
 
 ## 本轮性能与修正
 
@@ -90,6 +90,8 @@ npm run android:build
 
 修复人物合批槽复用导致的脸部颜色错乱、院内座椅提前隐藏造成的悬空观感，并按座高计算腿部角度。漫游工具分为顶部导航、右侧地图天气和底部动作，左上/手机左下显示FPS并可快捷切到流畅优先。软件渲染采样不能代表手机实际帧率，仍不承诺所有设备稳定60FPS。
 
-当前检查见[0.12.0验证记录](docs/verification/verification-0.12.0.md)。技术依据：[Three.js轻量光照材质](https://threejs.org/docs/pages/MeshLambertMaterial.html)、[R3F性能指南](https://r3f.docs.pmnd.rs/advanced/scaling-performance)。
+当前检查见[0.12.1验证记录](docs/verification/verification-0.12.1.md)。技术依据：[Three.js轻量光照材质](https://threejs.org/docs/pages/MeshLambertMaterial.html)、[R3F性能指南](https://r3f.docs.pmnd.rs/advanced/scaling-performance)。
 
 本机有独立显卡时，可设置MYHOME_SOFTWARE_RENDER=0使用默认图形后端做交互回归；强制软件渲染的长流程测试会明显占用CPU。请将测试与前台3D体验分开运行。
+
+0.12.1 修正：公交站迁至村口公共区域；行走/车辆统一使用全域边界。三座山加入可步行登顶再下山的路线，雪山与火山有盘山路和导向护栏、路标、雾带与峰顶观察点。移动和驾驶拆成物理子步，镜头位置/注视点同步平滑；自家车辆独立于村庄静态区域的距离裁剪，开远后保持显示。FPS旁提供慢帧次数，按钮提示显示P95和峰值。

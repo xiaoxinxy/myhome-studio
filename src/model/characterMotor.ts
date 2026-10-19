@@ -1,3 +1,4 @@
+import {motionSubsteps} from './framePacing';
 import {nearbyObstacles,nearbySegments,distanceToSegment,walkHeight,walkable,moveWalker,type WalkWorld} from './walking';
 import {landmark,landmarkDecks} from './expedition';
 export const HUMAN_SCALE=.9,BODY_HEIGHT=1.62;
@@ -18,7 +19,7 @@ export function findClimb(m:Motor,w:WalkWorld):Climb|null{const fx=-Math.sin(m.y
   const blockedHead=w.layout.buildings.some(b=>tx>b.x&&tx<b.x+b.w&&tz>b.z&&tz<b.z+b.d&&top<b.base+b.height&&top+.03+BODY_HEIGHT>b.base+b.height-.02);if(!blockedHead&&walkable(tx,tz,{...w,actorY:top+.03}))return{from:{x:m.x,y:m.y,z:m.z},to:{x:tx,y:top+.03,z:tz},t:0};
  }return null;
 }
-export function stepMotor(m:Motor,dx:number,dz:number,dt:number,w:WalkWorld){dt=Math.min(.05,Math.max(0,dt));
+function stepMotorOnce(m:Motor,dx:number,dz:number,dt:number,w:WalkWorld){
  if(m.climbRequested){m.climbRequested=false;if(m.grounded)m.climb=findClimb(m,w);}
  if(m.climb){const c=m.climb;c.t=Math.min(1,c.t+dt/1.05);const t=c.t*c.t*tEase(c.t),k=Math.min(1,t);m.x=c.from.x+(c.to.x-c.from.x)*k;m.z=c.from.z+(c.to.z-c.from.z)*k;m.y=c.from.y+(c.to.y-c.from.y)*k+Math.sin(c.t*Math.PI)*.28;m.vy=0;m.grounded=false;if(c.t===1){m.climb=null;m.grounded=true;}return;}
  if(m.jumpRequested){m.jumpRequested=false;if(m.grounded){m.vy=4.7;m.grounded=false;}}
@@ -30,3 +31,5 @@ export function stepMotor(m:Motor,dx:number,dz:number,dt:number,w:WalkWorld){dt=
  if(m.y-support>.26)m.grounded=false;
 }
 function tEase(t:number){return 3-2*t;}
+
+export function stepMotor(m:Motor,dx:number,dz:number,dt:number,w:WalkWorld){const {count,step}=motionSubsteps(dt);if(!step)return;for(let i=0;i<count;i++)stepMotorOnce(m,dx/count,dz/count,step,w);}

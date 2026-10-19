@@ -115,12 +115,13 @@ export function walkSpawn(world:WalkWorld,roomId?:string|null):WalkPoint&{yaw?:n
 
 // Test the short camera boom against walls and the roofs of other buildings.
 export function cameraBoom(target:{x:number;y:number;z:number},eye:{x:number;y:number;z:number},world:WalkWorld,cutBuilding?:string):number {
- const distance=Math.hypot(eye.x-target.x,eye.y-target.y,eye.z-target.z),steps=Math.ceil(distance/.12),cx=(eye.x+target.x)/2,cz=(eye.z+target.z)/2,segments=nearbySegments(world,cx,cz,distance/2+1),obstacles=nearbyObstacles(world,cx,cz,distance/2+1),buildings=world.layout.buildings.filter(b=>b.x<cx+distance/2+1&&b.x+b.w>cx-distance/2-1&&b.z<cz+distance/2+1&&b.z+b.d>cz-distance/2-1);
+ const distance=Math.hypot(eye.x-target.x,eye.y-target.y,eye.z-target.z),steps=Math.ceil(distance/.12),cx=(eye.x+target.x)/2,cz=(eye.z+target.z)/2,segments=nearbySegments(world,cx,cz,distance/2+1),obstacles=nearbyObstacles(world,cx,cz,distance/2+1,false),buildings=world.layout.buildings.filter(b=>b.x<cx+distance/2+1&&b.x+b.w>cx-distance/2-1&&b.z<cz+distance/2+1&&b.z+b.d>cz-distance/2-1);
  for(let i=1;i<=steps;i++){const t=i/steps,x=target.x+(eye.x-target.x)*t,y=target.y+(eye.y-target.y)*t,z=target.z+(eye.z-target.z)*t;
   const wall=segments.some(s=>y>s.base+.05&&y<s.base+(s.building===cutBuilding?.75:s.height)+.12&&distanceToSegment(x,z,s)<s.radius+.12);
   const roof=buildings.some(b=>b.id!==cutBuilding&&x>b.x-.25&&x<b.x+b.w+.25&&z>b.z-.25&&z<b.z+b.d+.25&&y>b.base+b.height-.15&&y<b.base+b.height+b.rise+.3);
   const object=obstacles.some(o=>{if(!!world.ignoredObstacle&&o.itemId===world.ignoredObstacle)return false;if(y<o.base+.05||y>o.base+o.height+.1)return false;const dx=x-o.x,dz=z-o.z;return Math.abs(dx*o.cos+dz*o.sin)<o.w/2+.1&&Math.abs(-dx*o.sin+dz*o.cos)<o.d/2+.1;});
-  if(wall||roof||object)return Math.max(.08,(i-1)/steps);
+  const ground=world.street&&z>world.plan.dimensions.depth&&y<terrainHeight(x,z)+.2;
+  if(wall||roof||object||ground)return Math.max(.08,(i-1)/steps);
  }
  return 1;
 }
@@ -136,4 +137,4 @@ function candidates<T>(items:T[],x:number,z:number,r:number,rect:(item:T)=>[numb
  const found=new Set<number>();for(let a=Math.floor((x-r)/4);a<=Math.floor((x+r)/4);a++)for(let b=Math.floor((z-r)/4);b<=Math.floor((z+r)/4);b++)for(const i of grid.get(a+':'+b)||[])found.add(i);return [...found].map(i=>items[i]);
 }
 export function nearbySegments(w:WalkWorld,x:number,z:number,r:number){return candidates(w.segments,x,z,r,s=>[Math.min(s.ax,s.bx)-s.radius,Math.min(s.az,s.bz)-s.radius,Math.max(s.ax,s.bx)+s.radius,Math.max(s.az,s.bz)+s.radius]);}
-export function nearbyObstacles(w:WalkWorld,x:number,z:number,r:number){return [...candidates(w.obstacles,x,z,r,o=>{const radius=Math.hypot(o.w,o.d)/2;return[o.x-radius,o.z-radius,o.x+radius,o.z+radius];}),...(w.dynamicObstacles||[]),...[...npcAgents.values()].filter(a=>!trafficActors.has(a.profile.id)&&Math.abs(a.x-x)<r+1&&Math.abs(a.z-z)<r+1).map(a=>({itemId:a.profile.id,x:a.x,z:a.z,w:.36,d:.36,cos:1,sin:0,base:Math.max(0,a.y),height:1.5})),...(w.street?[...trafficActors.values()].filter(a=>Math.abs(a.x-x)<r+Math.hypot(a.w,a.d)/2&&Math.abs(a.z-z)<r+Math.hypot(a.w,a.d)/2).map(a=>({itemId:a.id,x:a.x,z:a.z,w:a.w,d:a.d,cos:Math.cos(-a.yaw),sin:Math.sin(-a.yaw),base:0,height:a.height??(a.kind==="person"?1.4:a.kind==="van"?2.1:1.5)})):[])];}
+export function nearbyObstacles(w:WalkWorld,x:number,z:number,r:number,people=true){return [...candidates(w.obstacles,x,z,r,o=>{const radius=Math.hypot(o.w,o.d)/2;return[o.x-radius,o.z-radius,o.x+radius,o.z+radius];}),...(w.dynamicObstacles||[]),...(people?[...npcAgents.values()].filter(a=>!trafficActors.has(a.profile.id)&&Math.abs(a.x-x)<r+1&&Math.abs(a.z-z)<r+1).map(a=>({itemId:a.profile.id,x:a.x,z:a.z,w:.36,d:.36,cos:1,sin:0,base:Math.max(0,a.y),height:1.5})):[]),...(w.street?[...trafficActors.values()].filter(a=>(people||a.kind!=="person")&&Math.abs(a.x-x)<r+Math.hypot(a.w,a.d)/2&&Math.abs(a.z-z)<r+Math.hypot(a.w,a.d)/2).map(a=>({itemId:a.id,x:a.x,z:a.z,w:a.w,d:a.d,cos:Math.cos(-a.yaw),sin:Math.sin(-a.yaw),base:0,height:a.height??(a.kind==="person"?1.4:a.kind==="van"?2.1:1.5)})):[])];}

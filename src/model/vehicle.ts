@@ -1,3 +1,5 @@
+import {motionSubsteps} from './framePacing';
+import {walkHeight} from './walking';
 import type {PlacedItem,ItemDef} from './types';
 import {nearbySegments,nearbyObstacles,type WalkWorld} from './walking';
 import {streetBounds} from './neighborhood';
@@ -18,11 +20,13 @@ export function canDrive(v:VehicleState,x:number,z:number,yaw:number,c:ItemDef,w
  if(x>0&&x<w.plan.dimensions.width&&z<w.layout.dividerZ+1.1)return false;
  return true;
 }
-export function driveStep(v:VehicleState,throttle:number,steer:number,dt:number,c:ItemDef,w:WalkWorld){
+function driveStepOnce(v:VehicleState,throttle:number,steer:number,dt:number,c:ItemDef,w:WalkWorld){
  dt=Math.max(0,Math.min(dt,.08));const max=vehicleTopSpeed(v.type),braking=throttle&&Math.sign(throttle)!==Math.sign(v.speed)&&Math.abs(v.speed)>.2,accel=throttle?throttle*(braking?12:v.type==='car'?5:2.1): -Math.sign(v.speed)*Math.min(Math.abs(v.speed)/Math.max(dt,.001),1.1);
  v.speed=Math.max(-Math.min(12/3.6,max*.4),Math.min(max,v.speed+accel*dt));let blocked=false;
  const steps=Math.max(1,Math.ceil(Math.abs(v.speed*dt)/.08));for(let i=0;i<steps;i++){
   const steeringRatio=(v.type==='car'?3.1:1.6)*(1+Math.pow(Math.abs(v.speed)/9,2)),angle=v.yaw-steer*v.speed*dt/steps/steeringRatio,x=v.x+Math.sin(angle)*v.speed*dt/steps,z=v.z+Math.cos(angle)*v.speed*dt/steps;
-  if(canDrive(v,x,z,angle,c,w)){v.x=x;v.z=z;v.yaw=angle;v.wheel+=v.speed*dt/steps/.3;}else{v.speed=0;blocked=true;break;}
+  if(canDrive(v,x,z,angle,c,w)){v.x=x;v.z=z;v.y=walkHeight(x,z,w);v.yaw=angle;v.wheel+=v.speed*dt/steps/.3;}else{v.speed=0;blocked=true;break;}
  }return blocked;
 }
+
+export function driveStep(v:VehicleState,throttle:number,steer:number,dt:number,c:ItemDef,w:WalkWorld){const {count,step}=motionSubsteps(dt);if(!step)return false;let blocked=false;for(let i=0;i<count;i++){if(driveStepOnce(v,throttle,steer,step,c,w)){blocked=true;break;}}return blocked;}

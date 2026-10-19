@@ -1,6 +1,6 @@
 import {routeLength,routePosition,type RoutePoint} from './traffic';
 
-export const busStops=[{id:'home',name:'村口',x:11,z:36.8},{id:'depot',name:'村庄客运站',x:164,z:36.8},{id:'eiffel',name:'铁塔景区',x:210,z:215},{id:'pisa',name:'斜塔景区',x:105,z:285},{id:'tiananmen',name:'城楼景区',x:305,z:420},{id:'louvre',name:'卢浮宫景区',x:-180,z:570},{id:'pyramid',name:'金字塔景区',x:-250,z:285}];
+export const busStops=[{id:'home',name:'村口公共候车站',x:132,z:36.8},{id:'depot',name:'村庄客运站',x:164,z:36.8},{id:'eiffel',name:'铁塔景区',x:210,z:215},{id:'pisa',name:'斜塔景区',x:105,z:285},{id:'tiananmen',name:'城楼景区',x:305,z:420},{id:'louvre',name:'卢浮宫景区',x:-180,z:570},{id:'pyramid',name:'金字塔景区',x:-250,z:285}];
 export const busRoute:RoutePoint[]=[busStops[0],busStops[1],{x:400,z:36.8},{x:400,z:215},busStops[2],{x:80,z:215},{x:80,z:285},busStops[3],{x:400,z:285},{x:400,z:420},busStops[4],{x:400,z:420},{x:400,z:570},busStops[5],{x:-400,z:570},{x:-400,z:285},busStops[6],{x:-400,z:285},{x:-400,z:36.8}];
 export function stopDistance(id:string){let distance=0;for(let i=0;i<busRoute.length;i++){if(busRoute[i]===busStops.find(s=>s.id===id))return distance;const b=busRoute[(i+1)%busRoute.length];distance+=Math.hypot(busRoute[i].x-b.x,busRoute[i].z-b.z);}return 0;}
 export type BusRuntime={id:string;distance:number;speed:number;x:number;z:number;yaw:number;pause:number;lastStop:string;nextStop:string};

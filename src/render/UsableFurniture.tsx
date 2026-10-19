@@ -1,3 +1,4 @@
+import {terrainHeight} from '../model/countryside';
 import {useHome} from '../store';
 import {useRef} from 'react';
 import {useFrame} from '@react-three/fiber';
@@ -27,6 +28,6 @@ function Cabinet({item,def:c}:{item:PlacedItem;def:ItemDef}){
  </group>;
 }
 export function VehicleOffset({item,children}:{item:PlacedItem;children:React.ReactNode}){
- const root=useRef<THREE.Group>(null),wheels=useRef<THREE.Object3D[]>([]);useFrame(()=>{const v=vehicles.get(item.id);if(!v||!root.current)return;if(useHome.getState().compare){root.current.position.set(0,0,0);root.current.rotation.y=0;return;}if(v.originX!==item.x||v.originZ!==item.z||v.originRotation!==item.rotation){Object.assign(v,{originX:item.x,originZ:item.z,originRotation:item.rotation,x:item.x,z:item.z,y:0,yaw:-item.rotation*Math.PI/180,speed:0});}const angle=-item.rotation*Math.PI/180,dx=v.x-item.x,dz=v.z-item.z;root.current.position.set(Math.cos(angle)*dx-Math.sin(angle)*dz,v.y,Math.sin(angle)*dx+Math.cos(angle)*dz);root.current.rotation.y=v.yaw-angle;if(!wheels.current.length)root.current.traverse(o=>{if(o.name==='轮轴旋转')wheels.current.push(o);});for(const wheel of wheels.current)wheel.rotation.y=v.wheel;});
+ const root=useRef<THREE.Group>(null),wheels=useRef<THREE.Object3D[]>([]);useFrame(()=>{const v=vehicles.get(item.id);if(!v||!root.current)return;if(useHome.getState().compare){root.current.position.set(0,0,0);root.current.rotation.y=0;return;}if(v.originX!==item.x||v.originZ!==item.z||v.originRotation!==item.rotation){Object.assign(v,{originX:item.x,originZ:item.z,originRotation:item.rotation,x:item.x,z:item.z,y:0,yaw:-item.rotation*Math.PI/180,speed:0});}const angle=-item.rotation*Math.PI/180,dx=v.x-item.x,dz=v.z-item.z;root.current.position.set(Math.cos(angle)*dx-Math.sin(angle)*dz,v.y,Math.sin(angle)*dx+Math.cos(angle)*dz);const reach=item.type==="car"?1.4:.65,front=terrainHeight(v.x+Math.sin(v.yaw)*reach,v.z+Math.cos(v.yaw)*reach),back=terrainHeight(v.x-Math.sin(v.yaw)*reach,v.z-Math.cos(v.yaw)*reach);root.current.rotation.set(-Math.atan2(front-back,reach*2),v.yaw-angle,0,"YXZ");if(!wheels.current.length)root.current.traverse(o=>{if(o.name==='轮轴旋转')wheels.current.push(o);});for(const wheel of wheels.current)wheel.rotation.y=v.wheel;});
  return <group ref={root}>{children}</group>;
 }

@@ -1,0 +1,28 @@
+{
+  "version": "0.12.1",
+  "viewport": [
+    1440,
+    1050
+  ],
+  "quality": "balanced",
+  "backend": "Chrome default, no forced SwiftShader",
+  "durationSeconds": 12,
+  "averageMs": 9.65321543407881,
+  "p95Ms": 16.299999997019768,
+  "maxMs": 24.299999997019768,
+  "slowFramesOver50ms": 0,
+  "hiddenVehicleFrames": 0,
+  "distance": 358.81594348643966,
+  "dpr": [
+    0.8
+  ],
+  "errors": [],
+  "turning": {
+    "p95Ms": 16.200000002980232,
+    "maxMs": 26.19999998807907,
+    "slowFrames": 0,
+    "maxCameraStep": 0.026743350660799813,
+    "distance": 65.43562790374449,
+    "speed": 35.38256267041359
+  }
+}
