@@ -1,8 +1,9 @@
+import {personImpacts} from './impacts';
 import {naturalPlaces,forestTree} from './nature';
-import {npcAgents} from './npcRuntime';
+import {nearbyAgents} from './npcRuntime';
 import {facilities,facilityWallPieces,facilityItems,facilityRooms,facilityLayout} from './facilities';
 import {terrainHeight} from './countryside';
-import {trafficActors} from './traffic';
+import {trafficActors,nearbyTraffic} from './traffic';
 import {landmarks,landmark,landmarkSolids,landmarkDecks} from './expedition';
 import {buildLayout,elevation,roomInnerRect} from './layout';
 import {neighborhood,neighborHouse,streetBounds,ruralPlots} from './neighborhood';
@@ -137,4 +138,4 @@ function candidates<T>(items:T[],x:number,z:number,r:number,rect:(item:T)=>[numb
  const found=new Set<number>();for(let a=Math.floor((x-r)/4);a<=Math.floor((x+r)/4);a++)for(let b=Math.floor((z-r)/4);b<=Math.floor((z+r)/4);b++)for(const i of grid.get(a+':'+b)||[])found.add(i);return [...found].map(i=>items[i]);
 }
 export function nearbySegments(w:WalkWorld,x:number,z:number,r:number){return candidates(w.segments,x,z,r,s=>[Math.min(s.ax,s.bx)-s.radius,Math.min(s.az,s.bz)-s.radius,Math.max(s.ax,s.bx)+s.radius,Math.max(s.az,s.bz)+s.radius]);}
-export function nearbyObstacles(w:WalkWorld,x:number,z:number,r:number,people=true){return [...candidates(w.obstacles,x,z,r,o=>{const radius=Math.hypot(o.w,o.d)/2;return[o.x-radius,o.z-radius,o.x+radius,o.z+radius];}),...(w.dynamicObstacles||[]),...(people?[...npcAgents.values()].filter(a=>!trafficActors.has(a.profile.id)&&Math.abs(a.x-x)<r+1&&Math.abs(a.z-z)<r+1).map(a=>({itemId:a.profile.id,x:a.x,z:a.z,w:.36,d:.36,cos:1,sin:0,base:Math.max(0,a.y),height:1.5})):[]),...(w.street?[...trafficActors.values()].filter(a=>(people||a.kind!=="person")&&Math.abs(a.x-x)<r+Math.hypot(a.w,a.d)/2&&Math.abs(a.z-z)<r+Math.hypot(a.w,a.d)/2).map(a=>({itemId:a.id,x:a.x,z:a.z,w:a.w,d:a.d,cos:Math.cos(-a.yaw),sin:Math.sin(-a.yaw),base:0,height:a.height??(a.kind==="person"?1.4:a.kind==="van"?2.1:1.5)})):[])];}
+export function nearbyObstacles(w:WalkWorld,x:number,z:number,r:number,people=true){return [...candidates(w.obstacles,x,z,r,o=>{const radius=Math.hypot(o.w,o.d)/2;return[o.x-radius,o.z-radius,o.x+radius,o.z+radius];}),...(w.dynamicObstacles||[]),...(people?nearbyAgents(x,z,r).filter(a=>!trafficActors.has(a.profile.id)&&!personImpacts.has(a.profile.id)).map(a=>({itemId:a.profile.id,x:a.x,z:a.z,w:.36,d:.36,cos:1,sin:0,base:Math.max(0,a.y),height:1.5})):[]),...(w.street?nearbyTraffic(x,z,r).filter(a=>(people||a.kind!=="person")&&!personImpacts.has(a.id)&&Math.abs(a.x-x)<r+Math.hypot(a.w,a.d)/2&&Math.abs(a.z-z)<r+Math.hypot(a.w,a.d)/2).map(a=>({itemId:a.id,x:a.x,z:a.z,w:a.w,d:a.d,cos:Math.cos(-a.yaw),sin:Math.sin(-a.yaw),base:0,height:a.height??(a.kind==="person"?1.4:a.kind==="van"?2.1:1.5)})):[])];}

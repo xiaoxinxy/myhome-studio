@@ -3,9 +3,9 @@ export const outerBounds={minX:-1550,maxX:2550,minZ:0,maxZ:3200};
 export type Landmark={id:string;name:string;x:number;z:number;w:number;d:number;h:number;arrival:{x:number;z:number};description:string};
 export const landmarks:Landmark[]=[
 {id:'pyramid',name:'吉萨金字塔',x:-250,z:115,w:230,d:230,h:146.5,arrival:{x:-250,z:260},description:'石灰岩塔身、入口甬道、石室与展陈 · 146.5m原始轮廓'},
-{id:'eiffel',name:'埃菲尔铁塔',x:210,z:115,w:125,d:125,h:330,arrival:{x:210,z:205},description:'钢桁架、拱脚、三层观景台 · 可乘电梯观景'},
+{id:'eiffel',name:'埃菲尔铁塔',x:210,z:115,w:125,d:125,h:330,arrival:{x:210,z:195},description:'钢桁架、拱脚、三层观景台 · 可乘电梯观景'},
 {id:'pisa',name:'比萨斜塔',x:105,z:250,w:16,d:16,h:58.36,arrival:{x:105,z:287},description:'白色石材柱廊、内部旋梯与钟楼 · 可逐层游览'},
-{id:'louvre',name:'卢浮宫与玻璃金字塔',x:-180,z:430,w:330,d:220,h:28,arrival:{x:-180,z:560},description:'雕饰立面、折线屋顶、玻璃金字塔、两翼展厅与艺术品'},
+{id:'louvre',name:'卢浮宫与玻璃金字塔',x:-180,z:430,w:330,d:220,h:28,arrival:{x:-180,z:550},description:'雕饰立面、折线屋顶、玻璃金字塔、两翼展厅与艺术品'},
 {id:'tiananmen',name:'天安门城楼',x:305,z:350,w:83,d:42,h:34.7,arrival:{x:305,z:408},description:'汉白玉基座、五座券门、重檐琉璃瓦、华表和城楼展厅'},
 ];
 export const landmark=(id:string)=>landmarks.find(l=>l.id===id)!;

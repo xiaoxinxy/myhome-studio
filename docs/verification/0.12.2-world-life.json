@@ -1,0 +1,320 @@
+{
+  "skies": [
+    {
+      "palette": {
+        "checked": 0,
+        "mismatches": []
+      },
+      "sky": {
+        "sunVisible": true,
+        "moonVisible": false,
+        "clouds": 8,
+        "weather": "clear",
+        "night": false
+      },
+      "population": {
+        "total": 348,
+        "hikers": 136,
+        "detailed": 0,
+        "visibleCoarse": 0,
+        "impacts": 0
+      },
+      "calls": 76,
+      "triangles": 66800
+    },
+    {
+      "palette": {
+        "checked": 0,
+        "mismatches": []
+      },
+      "sky": {
+        "sunVisible": false,
+        "moonVisible": true,
+        "clouds": 8,
+        "weather": "clear",
+        "night": true
+      },
+      "population": {
+        "total": 348,
+        "hikers": 136,
+        "detailed": 0,
+        "visibleCoarse": 0,
+        "impacts": 0
+      },
+      "calls": 78,
+      "triangles": 64300
+    },
+    {
+      "palette": {
+        "checked": 0,
+        "mismatches": []
+      },
+      "sky": {
+        "sunVisible": false,
+        "moonVisible": false,
+        "clouds": 28,
+        "weather": "rain",
+        "night": false
+      },
+      "population": {
+        "total": 348,
+        "hikers": 136,
+        "detailed": 0,
+        "visibleCoarse": 0,
+        "impacts": 0
+      },
+      "calls": 76,
+      "triangles": 66838
+    },
+    {
+      "palette": {
+        "checked": 0,
+        "mismatches": []
+      },
+      "sky": {
+        "sunVisible": false,
+        "moonVisible": false,
+        "clouds": 28,
+        "weather": "snow",
+        "night": false
+      },
+      "population": {
+        "total": 348,
+        "hikers": 136,
+        "detailed": 0,
+        "visibleCoarse": 0,
+        "impacts": 0
+      },
+      "calls": 76,
+      "triangles": 66838
+    }
+  ],
+  "regions": [
+    {
+      "id": "eiffel",
+      "palette": {
+        "checked": 999,
+        "mismatches": []
+      },
+      "sky": {
+        "sunVisible": true,
+        "moonVisible": false,
+        "clouds": 8,
+        "weather": "clear",
+        "night": false
+      },
+      "population": {
+        "total": 348,
+        "hikers": 136,
+        "detailed": 16,
+        "visibleCoarse": 2,
+        "impacts": 0
+      },
+      "calls": 80,
+      "triangles": 151960
+    },
+    {
+      "id": "pisa",
+      "palette": {
+        "checked": 599,
+        "mismatches": []
+      },
+      "sky": {
+        "sunVisible": true,
+        "moonVisible": false,
+        "clouds": 8,
+        "weather": "clear",
+        "night": false
+      },
+      "population": {
+        "total": 348,
+        "hikers": 136,
+        "detailed": 16,
+        "visibleCoarse": 0,
+        "impacts": 0
+      },
+      "calls": 424,
+      "triangles": 266216
+    },
+    {
+      "id": "pyramid",
+      "palette": {
+        "checked": 662,
+        "mismatches": []
+      },
+      "sky": {
+        "sunVisible": true,
+        "moonVisible": false,
+        "clouds": 8,
+        "weather": "clear",
+        "night": false
+      },
+      "population": {
+        "total": 348,
+        "hikers": 136,
+        "detailed": 16,
+        "visibleCoarse": 8,
+        "impacts": 0
+      },
+      "calls": 73,
+      "triangles": 150234
+    },
+    {
+      "id": "louvre",
+      "palette": {
+        "checked": 670,
+        "mismatches": []
+      },
+      "sky": {
+        "sunVisible": true,
+        "moonVisible": false,
+        "clouds": 8,
+        "weather": "clear",
+        "night": false
+      },
+      "population": {
+        "total": 348,
+        "hikers": 136,
+        "detailed": 16,
+        "visibleCoarse": 0,
+        "impacts": 0
+      },
+      "calls": 86,
+      "triangles": 144322
+    },
+    {
+      "id": "tiananmen",
+      "palette": {
+        "checked": 765,
+        "mismatches": []
+      },
+      "sky": {
+        "sunVisible": true,
+        "moonVisible": false,
+        "clouds": 8,
+        "weather": "clear",
+        "night": false
+      },
+      "population": {
+        "total": 348,
+        "hikers": 136,
+        "detailed": 16,
+        "visibleCoarse": 12,
+        "impacts": 0
+      },
+      "calls": 120,
+      "triangles": 119346
+    },
+    {
+      "id": "fuji",
+      "palette": {
+        "checked": 429,
+        "mismatches": []
+      },
+      "sky": {
+        "sunVisible": true,
+        "moonVisible": false,
+        "clouds": 8,
+        "weather": "clear",
+        "night": false
+      },
+      "population": {
+        "total": 348,
+        "hikers": 136,
+        "detailed": 8,
+        "visibleCoarse": 2,
+        "impacts": 0
+      },
+      "calls": 33,
+      "triangles": 202644
+    },
+    {
+      "id": "volcano",
+      "palette": {
+        "checked": 375,
+        "mismatches": []
+      },
+      "sky": {
+        "sunVisible": true,
+        "moonVisible": false,
+        "clouds": 8,
+        "weather": "clear",
+        "night": false
+      },
+      "population": {
+        "total": 348,
+        "hikers": 136,
+        "detailed": 8,
+        "visibleCoarse": 1,
+        "impacts": 0
+      },
+      "calls": 36,
+      "triangles": 211228
+    },
+    {
+      "id": "snow-mountain",
+      "palette": {
+        "checked": 427,
+        "mismatches": []
+      },
+      "sky": {
+        "sunVisible": true,
+        "moonVisible": false,
+        "clouds": 8,
+        "weather": "clear",
+        "night": false
+      },
+      "population": {
+        "total": 348,
+        "hikers": 136,
+        "detailed": 8,
+        "visibleCoarse": 1,
+        "impacts": 0
+      },
+      "calls": 43,
+      "triangles": 216962
+    }
+  ],
+  "hike": {
+    "height": 250.5294585216126,
+    "error": 0,
+    "distance": 3.31768848876935
+  },
+  "impact": {
+    "seen": true,
+    "peak": 0.9304661066672951,
+    "stages": [
+      "air",
+      "down",
+      "rise",
+      "return"
+    ],
+    "x": 507.1926347742393,
+    "person": {
+      "x": 503.836256191935,
+      "z": 1660,
+      "y": 0
+    },
+    "npc": {
+      "x": 503.836256191935,
+      "z": 1660
+    },
+    "speed": 0
+  },
+  "timing": {
+    "samples": 468,
+    "p95": 23.200000002980232,
+    "max": 30.099999994039536,
+    "over50": 0,
+    "renderTiming": {
+      "fps": 61,
+      "frameMs": 16.347826086956523,
+      "p95Ms": 24.600000008940697,
+      "maxMs": 29.799999997019768,
+      "slowFrames": 0,
+      "dpr": 0.8,
+      "suspended": false
+    }
+  },
+  "errors": []
+}

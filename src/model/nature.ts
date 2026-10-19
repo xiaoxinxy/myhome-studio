@@ -2,7 +2,7 @@
 export const natureGrid=256, distantNatureGrid=48;
 export type Mountain={id:string;name:string;x:number;z:number;r:number;h:number;kind:'fuji'|'volcano'|'snow'};
 export const mountains:Mountain[]=[{id:'fuji',name:'富士山主题景观',x:-700,z:2400,r:570,h:430,kind:'fuji'},{id:'volcano',name:'赤岩火山',x:700,z:2400,r:430,h:285,kind:'volcano'},{id:'snow-mountain',name:'北境雪山',x:1850,z:2020,r:500,h:570,kind:'snow'}];
-export const naturalPlaces=[{id:'fuji',name:'富士山观景营地',x:-700,z:1770,mountain:'fuji'},{id:'volcano',name:'火山地质观景台',x:700,z:1900,mountain:'volcano'},{id:'snow-mountain',name:'雪山登山口',x:1850,z:1450,mountain:'snow-mountain'},{id:'forest',name:'杉木森林步道',x:1100,z:850,mountain:null}];
+export const naturalPlaces=[{id:'fuji',name:'富士山观景营地',x:-700,z:1770,mountain:'fuji'},{id:'volcano',name:'火山地质观景台',x:700,z:1900,mountain:'volcano'},{id:'snow-mountain',name:'雪山登山口',x:1850,z:1440,mountain:'snow-mountain'},{id:'forest',name:'杉木森林步道',x:1100,z:850,mountain:null}];
 // A compact game landscape inspired by Fuji's cone and snow cap, not its real elevation.
 export function mountainBase(m:Mountain,x:number,z:number){const dx=(x-m.x)/m.r,dz=(z-m.z)/m.r,r=Math.hypot(dx,dz);if(r>=1)return 0;const a=Math.atan2(dx,dz);
  if(m.kind==='volcano'){const rim=Math.pow(.87,.95);return m.h*(r<.075?.56:r<.13?.56+(rim-.56)*(r-.075)/.055:Math.pow(1-r,.95))*(1+.025*Math.sin(a*9)*Math.min(1,Math.max(0,r-.075)*6));}

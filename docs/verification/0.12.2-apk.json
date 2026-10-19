@@ -1,0 +1,15 @@
+{
+  "version": "0.12.2",
+  "versionCode": 19,
+  "bytes": 8300865,
+  "sha256": "34826052e8edc35f504cf46d88ca8c297377ea71f229a949044577f1d3ec08f5",
+  "certificateSha256": "365d1e2eda65291fcf3aecca93353f0d6ecf6ea8aea758ea5e7c418b0c835995",
+  "offlineTest": "passed",
+  "offlineTestSeconds": 44.9,
+  "signatureSchemes": [
+    "v2",
+    "v3"
+  ],
+  "resourcePaths": "verified",
+  "alignment": "verified"
+}

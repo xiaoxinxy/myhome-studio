@@ -2,8 +2,14 @@ import type {Dimensions} from './types';
 import {reactions} from './encounters';
 import {landmarks} from './expedition';
 export type RoutePoint={x:number;z:number};
-export type TrafficActor={height?:number;id:string;x:number;z:number;yaw:number;w:number;d:number;kind:'car'|'van'|'trike'|'ebike'|'person';distance:number;route:RoutePoint[];speed:number;pausedUntil:number;claimed?:boolean;velocity?:number;nextPause?:number;direction?:number;reactionUntil?:number;activity?:'walk'|'wait'|'drive'|'flee'|'stagger'};
-export const trafficActors=new Map<string,TrafficActor>();
+export type TrafficActor={y?:number;height?:number;id:string;x:number;z:number;yaw:number;w:number;d:number;kind:'car'|'van'|'trike'|'ebike'|'person';distance:number;route:RoutePoint[];speed:number;pausedUntil:number;claimed?:boolean;velocity?:number;nextPause?:number;direction?:number;reactionUntil?:number;activity?:'walk'|'wait'|'drive'|'flee'|'stagger'};
+let trafficRevision=0;
+class TrafficMap extends Map<string,TrafficActor>{override set(k:string,v:TrafficActor){trafficRevision++;return super.set(k,v);}override delete(k:string){trafficRevision++;return super.delete(k);}override clear(){trafficRevision++;super.clear();}}
+export const trafficActors=new TrafficMap();
+const trafficCells=new Map<string,TrafficActor[]>();let indexedRevision=-1,indexedTime=-Infinity;
+export function nearbyTraffic(x:number,z:number,r:number){const now=performance.now();if(indexedRevision!==trafficRevision||now-indexedTime>16){trafficCells.clear();for(const a of trafficActors.values()){const key=Math.floor(a.x/20)+':'+Math.floor(a.z/20);let cell=trafficCells.get(key);if(!cell){cell=[];trafficCells.set(key,cell);}cell.push(a);}indexedRevision=trafficRevision;indexedTime=now;}
+ const out:TrafficActor[]=[];for(let i=Math.floor((x-r-6)/20);i<=Math.floor((x+r+6)/20);i++)for(let j=Math.floor((z-r-6)/20);j<=Math.floor((z+r+6)/20);j++)for(const a of trafficCells.get(i+':'+j)||[])if(Math.abs(a.x-x)<r+6&&Math.abs(a.z-z)<r+6)out.push(a);return out;
+}
 export function routeLength(route:RoutePoint[]){return route.reduce((s,a,i)=>{const b=route[(i+1)%route.length];return s+Math.hypot(b.x-a.x,b.z-a.z);},0);}
 export function routePosition(route:RoutePoint[],distance:number){const total=routeLength(route);let t=(distance%total+total)%total;for(let i=0;i<route.length;i++){const a=route[i],b=route[(i+1)%route.length],length=Math.hypot(b.x-a.x,b.z-a.z);if(t<=length)return{x:a.x+(b.x-a.x)*t/length,z:a.z+(b.z-a.z)*t/length,yaw:Math.atan2(b.x-a.x,b.z-a.z)};t-=length;}return{...route[0],yaw:0};}
 export function createTraffic(d:Dimensions):TrafficActor[]{const A=d.depth+6.8,B=d.depth+68.8,C=d.depth+114.8,main=[{x:-94,z:A-1.15},{x:d.width+94,z:A-1.15},{x:d.width+94,z:A+1.15},{x:-94,z:A+1.15}],back=[{x:-86,z:B-.9},{x:d.width+85,z:B-.9},{x:d.width+85,z:B+.9},{x:-86,z:B+.9}],market=[{x:-62,z:C-.85},{x:86,z:C-.85},{x:86,z:C+.85},{x:-62,z:C+.85}];const result:TrafficActor[]=[];
@@ -21,12 +27,16 @@ export function advanceTraffic(a:TrafficActor,dt:number,player?:(RoutePoint&{rad
  if(!flee&&now<a.pausedUntil){a.activity='wait';a.velocity=0;return false;}
  let desired=a.speed*(flee?2.7:1);const candidate=routePosition(a.route,a.distance+desired*dt*direction);
  if(player&&!flee&&Math.hypot(candidate.x-player.x,candidate.z-player.z)<=Math.hypot(a.x-player.x,a.z-player.z)&&Math.hypot(candidate.x-player.x,candidate.z-player.z)<(vehicle?2.7+(player.radius??.2):.4+(player.radius??.2)))desired=0;
- if(vehicle)for(const b of trafficActors.values()){if(b===a)continue;const dx=b.x-a.x,dz=b.z-a.z,forward=dx*Math.sin(a.yaw)+dz*Math.cos(a.yaw),side=dx*Math.cos(a.yaw)-dz*Math.sin(a.yaw);if(forward>0&&forward<(a.d+b.d)/2+1.6+Math.max(0,a.velocity||0)*.7&&Math.abs(side)<(a.w+b.w)/2+.1&&(b.kind==='person'||b.claimed||Math.cos(a.yaw-b.yaw)>.5)){desired=0;break;}}
+ if(vehicle)for(const b of nearbyTraffic(a.x,a.z,a.d+Math.max(0,a.velocity||0)*.7)){if(b===a)continue;const dx=b.x-a.x,dz=b.z-a.z,forward=dx*Math.sin(a.yaw)+dz*Math.cos(a.yaw),side=dx*Math.cos(a.yaw)-dz*Math.sin(a.yaw);if(forward>0&&forward<(a.d+b.d)/2+1.6+Math.max(0,a.velocity||0)*.7&&Math.abs(side)<(a.w+b.w)/2+.1&&(b.kind==='person'||b.claimed||Math.cos(a.yaw-b.yaw)>.5)){desired=0;break;}}
  a.velocity=desired===0?0:Math.min(desired,(a.velocity??desired)+dt*(vehicle?1.5:2));if(!a.velocity){a.activity='wait';return false;}
  a.distance+=a.velocity*dt*direction;const next=routePosition(a.route,a.distance);if(direction<0)next.yaw+=Math.PI;Object.assign(a,next);return true;
 }
 
-export function createOuterTraffic():TrafficActor[]{const r:TrafficActor[]=[];const route=[{x:-710,z:568},{x:1398,z:568},{x:1398,z:1658},{x:-710,z:1658},{x:-710,z:572},{x:1402,z:572},{x:1402,z:1662},{x:-714,z:1662},{x:-714,z:568}];
- for(let i=0;i<14;i++)r.push({id:'traffic-outer-'+i,route,distance:i*routeLength(route)/14,kind:i%4===0?'van':'car',speed:12+i%4,w:1.78,d:4.2,pausedUntil:0,...routePosition(route,i*routeLength(route)/14)});
+export function createOuterTraffic():TrafficActor[]{const r:TrafficActor[]=[];const route=[{x:-728,z:568},{x:1398,z:568},{x:1398,z:1658},{x:-728,z:1658},{x:-728,z:572},{x:1402,z:572},{x:1398,z:1662},{x:-728,z:1662},{x:-732,z:568}];
+ const addLoop=(prefix:string,points:RoutePoint[],count:number,speed:number)=>{for(let i=0;i<count;i++){const distance=i*routeLength(points)/count,kind=(['car','van','car','ebike','trike','car'] as const)[i%6];r.push({id:prefix+i,route:points,distance,kind,speed:kind==='ebike'?6:kind==='trike'?5:speed+i%3,w:kind==='ebike'?.6:kind==='trike'?1.25:1.78,d:kind==='ebike'?1.8:kind==='trike'?2.7:4.2,pausedUntil:0,...routePosition(points,distance)});}};
+ addLoop('traffic-outer-',route,40,10);
+ addLoop('traffic-tour-', [{x:-398,z:283.5},{x:398,z:283.5},{x:398,z:568.5},{x:-398,z:568.5}],24,6);
+ addLoop('traffic-east-', [{x:402,z:38.3},{x:1398,z:38.3},{x:1398,z:571.5},{x:402,z:571.5}],24,9);
+ for(const [i,ax,az,bx,bz] of [[0,-1320,1750,1400,1750],[1,-1320,570,-1320,3060],[2,-1320,3060,2420,3060],[3,2420,570,2420,3060],[4,1400,1450,2420,1450]]){const dx=bx-ax,dz=bz-az,length=Math.hypot(dx,dz),sx=dz/length*1.6,sz=-dx/length*1.6;addLoop('traffic-scenic-'+i+'-',[{x:ax+sx,z:az+sz},{x:bx+sx,z:bz+sz},{x:bx-sx,z:bz-sz},{x:ax-sx,z:az-sz}],10,12);}
  for(const l of landmarks)r.push({id:'traffic-parked-'+l.id,route:[l.arrival,{x:l.arrival.x+1,z:l.arrival.z}],distance:0,kind:l.id==='pisa'?'ebike':'car',speed:0,w:l.id==='pisa'?.6:1.78,d:l.id==='pisa'?1.8:4.2,pausedUntil:0,claimed:true,x:l.arrival.x+6,z:l.arrival.z,yaw:Math.PI/2});
  return r;}
