@@ -13,17 +13,17 @@ import {PublicRoof,PublicExterior,PublicInterior} from './PublicDetails';
 import {ItemEffects} from './ItemEffects';
 import type {Dimensions} from '../model/types';
 const Interior=memo(function Interior({home:h}:{home:VillageHome}){
- const [near,setNear]=useState(false),flag=useRef(false),timer=useRef(0);
- useFrame((state,dt)=>{timer.current+=dt;if(timer.current<.4)return;timer.current=0;const p=state.camera.position,next=h.layout.buildings.some(b=>Math.hypot(Math.max(b.x-p.x,0,p.x-b.x-b.w),Math.max(b.z-p.z,0,p.z-b.z-b.d),Math.max(0,p.y-b.height))<(flag.current?18:12));if(next!==flag.current){flag.current=next;setNear(next);}});
- if(!near)return null;
- return <group name={h.n.name+' · 室内陈设'}>{h.n.style>=12&&<StaticBatch revision="public-interior"><PublicInterior home={h}/></StaticBatch>}{h.plan.items.map(f=>{const def=catalog.find(c=>c.id===f.type)!;return <group key={f.id} position={[f.x,f.room.endsWith('-yard')?.08:.12,f.z]} rotation={[0,-f.rotation*Math.PI/180,0]} onClick={e=>{if(e.delta<5){e.stopPropagation();useHome.setState({selected:f.id});}}}><ItemEffects item={f}>{['fridge','cabinet'].includes(def.model)?<UsableFurniture item={f} def={def}/>:<StaticBatch revision={f.type+f.color}><UsableFurniture item={f} def={def}/></StaticBatch>}</ItemEffects></group>;})}</group>;
+ const [near,setNear]=useState(false),[yardNear,setYardNear]=useState(false),flag=useRef(false),yardFlag=useRef(false),timer=useRef(0);
+ useFrame((state,dt)=>{timer.current+=dt;if(timer.current<.4)return;timer.current=0;const p=state.camera.position,next=h.layout.buildings.some(b=>Math.hypot(Math.max(b.x-p.x,0,p.x-b.x-b.w),Math.max(b.z-p.z,0,p.z-b.z-b.d),Math.max(0,p.y-b.height))<(useHome.getState().walking?5:(flag.current?18:12)));if(next!==flag.current){flag.current=next;setNear(next);}const yn=Math.hypot(Math.max(h.n.x-p.x,0,p.x-h.n.x-h.n.w),Math.max(h.n.z-p.z,0,p.z-h.n.z-h.n.depth))<45;if(yn!==yardFlag.current){yardFlag.current=yn;setYardNear(yn);}});
+
+ return <group name={h.n.name+' · 室内陈设'}>{h.n.style>=12&&<group visible={near}><StaticBatch revision="public-interior"><PublicInterior home={h}/></StaticBatch></group>}{h.plan.items.map(f=>{const def=catalog.find(c=>c.id===f.type)!;return <group visible={f.room.endsWith('-yard')?yardNear:near} key={f.id} position={[f.x,f.room.endsWith('-yard')?.08:.12,f.z]} rotation={[0,-f.rotation*Math.PI/180,0]} onClick={e=>{if(e.delta<5){e.stopPropagation();useHome.setState({selected:f.id});}}}><ItemEffects item={f}>{['fridge','cabinet'].includes(def.model)?<UsableFurniture item={f} def={def}/>:<StaticBatch revision={f.type+f.color}><UsableFurniture item={f} def={def}/></StaticBatch>}</ItemEffects></group>;})}</group>;
 });
 const Home=memo(function Home({home,lit}:{home:VillageHome;lit:boolean}){
  const {n,layout,plan}=home,walking=useHome(s=>s.walking),[detail,setDetail]=useState(false),near=useRef(false),timer=useRef(0);
  useFrame((state,dt)=>{timer.current+=dt;if(timer.current<.35)return;timer.current=0;const p=state.camera.position,next=layout.buildings.some(b=>Math.hypot(Math.max(b.x-p.x,0,p.x-b.x-b.w),Math.max(b.z-p.z,0,p.z-b.z-b.d),Math.max(0,p.y-b.height))<(near.current?34:26));if(next!==near.current){near.current=next;setDetail(next);}});
  return <group name={n.name}>
  {n.style>=12&&<StaticBatch revision={String(detail)+lit}><PublicExterior home={home} lit={lit} detail={detail}/></StaticBatch>}
- {detail?<StaticBatch revision={JSON.stringify([n,walking])}><group>
+ {<group visible={detail}><StaticBatch revision={JSON.stringify([n,walking])}><group>
   <Box p={[n.x+n.w/2,0,n.z+n.depth/2]} s={[n.w,.16,n.depth]} m={surface('paving',plan.palette.paving,n.w,n.depth)}/>
   <HouseWalls layout={layout} plan={plan} walking={walking} cut={false} lit={lit} finish={n.style===13||n.style===14?"paint":n.style>=12?"brick":"facade"}/>
   {layout.buildings.map(b=>{const along=b.ridge==='x',width=along?b.w:b.d,depth=along?b.d:b.w;return <group key={b.id} name={b.id+'-封闭屋顶'}>
@@ -42,7 +42,7 @@ const Home=memo(function Home({home,lit}:{home:VillageHome;lit:boolean}){
   {n.style%3===0&&<Box p={[n.x+n.w*.75,.17,n.z+n.depth-3]} s={[3.5,.2,1.5]} c="#7e9f9d"/>}
   {n.style%3===1&&Array.from({length:3},(_,i)=><Box key={i} p={[n.x+n.w*.72,.15,n.z+n.depth-3-i*.8]} s={[3,.18,.5]} c="#8a9067"/>)}
   {n.style%3===2&&<group><Box p={[n.x+n.w*.7,.4,n.z+n.depth-3]} s={[2,.8,1.2]} m={surface('wood','#aa9472',2,.8)}/><Box p={[n.x+n.w*.7,.86,n.z+n.depth-3]} s={[2.2,.1,1.3]} c="#d1c6a8"/></group>}
- </group></StaticBatch>:<StaticBatch revision={JSON.stringify(n)}><DistantHome home={home}/></StaticBatch>}<Interior home={home}/></group>;
+ </group></StaticBatch></group>}<group visible={!detail}><StaticBatch revision={JSON.stringify(n)}><DistantHome home={home}/></StaticBatch></group><Interior home={home}/></group>;
 });
 function DistantHome({home}:{home:VillageHome}){const {n,layout}=home;return <group name="远景建筑轮廓">
  <Box p={[n.x+n.w/2,0,n.z+n.depth/2]} s={[n.w,.16,n.depth]} c="#b1b39f"/>

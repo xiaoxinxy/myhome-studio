@@ -1,4 +1,4 @@
-import {useEffect,useMemo,useRef,useState} from 'react';
+import {useLayoutEffect,useEffect,useMemo,useRef,useState} from 'react';
 import {useFrame} from '@react-three/fiber';
 import * as THREE from 'three';
 import {southYard} from '../model/southYard';
@@ -45,13 +45,14 @@ const birdGeometry=new THREE.SphereGeometry(1,8,6),birdFarGeometry=new THREE.Ico
 const birdMaterial=new THREE.MeshStandardMaterial({color:'white',roughness:.9});
 export function Poultry({d}:{d:Dimensions}){
  const y=useMemo(()=>southYard(d),[d]),mesh=useRef<THREE.InstancedMesh>(null),clock=useRef(0),next=useRef(0),last=useRef(0),feed=useRef(0);
- const dummy=useMemo(()=>new THREE.Object3D(),[]),matrix=useMemo(()=>new THREE.Matrix4(),[]),local=useMemo(()=>new THREE.Object3D(),[]);
+ const view=useMemo(()=>({frustum:new THREE.Frustum(),matrix:new THREE.Matrix4(),sphere:new THREE.Sphere(new THREE.Vector3(),.85),center:new THREE.Vector3(y.w/2,0,y.z+y.d/2)}),[y]),dummy=useMemo(()=>new THREE.Object3D(),[]),matrix=useMemo(()=>new THREE.Matrix4(),[]),local=useMemo(()=>new THREE.Object3D(),[]);
  const birds=useMemo(()=>Array.from({length:44},(_,i)=>({goose:i>=30,phase:i*2.399,x:1.5+(i*3.71)%(d.width-3),z:y.z+1.5+(i*2.37)%(y.d-3),px:1.5+(i*3.71)%(d.width-3),pz:y.z+1.5+(i*2.37)%(y.d-3)})),[d,y]);
+ useLayoutEffect(()=>{mesh.current?.setColorAt(0,new THREE.Color('white'));},[]);
  useEffect(()=>{worldTargets.set('south-yard-feed',{point:()=>({x:y.w/2,z:y.z+2}),label:'给鸡和鹅撒把粮',activate:()=>{feed.current=clock.current+24;useHome.setState({notice:'撒下谷物，鸡和鹅围过来啄食'});}});return()=>{worldTargets.delete('south-yard-feed');};},[y]);
  useFrame((state,dt)=>{
   clock.current+=Math.min(dt,.1);if(!mesh.current||clock.current<next.current)return;next.current=clock.current+.05;const stepTime=Math.min(.15,clock.current-last.current);last.current=clock.current;
-  const center=new THREE.Vector3(y.w/2,0,y.z+y.d/2);if(state.camera.position.distanceTo(center)>110&&mesh.current.userData.ready)return;
-  mesh.current.geometry=state.camera.position.distanceTo(center)>32?birdFarGeometry:birdGeometry;
+  const distance=state.camera.position.distanceTo(view.center);mesh.current.visible=distance<110;if(distance>110&&mesh.current.userData.ready)return;state.camera.updateMatrixWorld();view.matrix.multiplyMatrices(state.camera.projectionMatrix,state.camera.matrixWorldInverse);view.frustum.setFromProjectionMatrix(view.matrix);
+  mesh.current.geometry=distance>26?birdFarGeometry:birdGeometry;
   const s=useHome.getState(),shelter=environmentAt(s.time,s.weather).night||s.weather==='rain'||s.weather==='snow',active=s.layers.petMotion,t=active?clock.current:0;
   let index=0;const color=new THREE.Color();
   const part=(p:number[],scale:number[],c:string)=>{local.position.set(p[0],p[1],p[2]);local.scale.set(scale[0],scale[1],scale[2]);local.updateMatrix();matrix.multiplyMatrices(dummy.matrix,local.matrix);mesh.current!.setMatrixAt(index,matrix);mesh.current!.setColorAt(index++,color.set(c));};
@@ -61,6 +62,7 @@ export function Poultry({d}:{d:Dimensions}){
    const z=shelter?y.z+.7+Math.floor(i/11)*(y.coop.d-1.4)/4:feeding?Math.max(y.z+.7,y.z+2+Math.sin(b.phase)*(.65+i%6*.4)):Math.max(y.z+.6,Math.min(y.z+y.d-.6,b.z+Math.cos(a)*.6));
    const g=b.goose,body=g?'#ecebdc':['#bb905e','#887052','#c3ab7b','#d3c5a2','#745b45'][i%5],peck=Math.sin(t*2+b.phase)>.8,step=Math.sin(t*7+b.phase)*.05;
    const dx=x-b.px,dz=z-b.pz,distance=Math.hypot(dx,dz),k=active?Math.min(1,stepTime*(g?.5:.65)/Math.max(.001,distance)):0;b.px+=dx*k;b.pz+=dz*k;
+   view.sphere.center.set(b.px,.5,b.pz);if(!view.frustum.intersectsSphere(view.sphere))return;
    dummy.position.set(b.px,.06,b.pz);dummy.rotation.y=distance>.06?Math.atan2(dx,dz):a;dummy.scale.setScalar(g?.7:.55);dummy.updateMatrix();
    part([0,.4,0],[.19,.23,.32],body);part([0,.43,-.29],[.15,.15,.23],body);
    part([-.18,.42,0],[.055,.15,.24],g?'#d9ded1':'#a4855b');part([.18,.42,0],[.055,.15,.24],g?'#d9ded1':'#a4855b');
@@ -71,7 +73,7 @@ export function Poultry({d}:{d:Dimensions}){
    part([-.095,.12+step,0],[.025,.12,.03],'#bd8948');part([.095,.12-step,.05],[.025,.12,.03],'#bd8948');
    part([0,g?.98:peck?.35:.89,.3],g?[.01,.01,.01]:[.06,.06,.08],g?body:'#b9543f');
   });
-  mesh.current.instanceMatrix.needsUpdate=true;mesh.current.instanceColor!.needsUpdate=true;mesh.current.userData.ready=true;
+  mesh.current.count=index;if(index){mesh.current.instanceMatrix.needsUpdate=true;if(mesh.current.instanceColor)mesh.current.instanceColor.needsUpdate=true;}mesh.current.userData.ready=true;
  });
- return <instancedMesh ref={mesh} args={[birdGeometry,birdMaterial,44*12]} frustumCulled={false} name="南院 · 30只鸡和14只鹅" castShadow receiveShadow onClick={e=>{e.stopPropagation();worldTargets.get('south-yard-feed')?.activate();}}/>;
+ return <instancedMesh ref={mesh} args={[birdGeometry,birdMaterial,44*12]} count={0} frustumCulled={false} name="南院 · 30只鸡和14只鹅" castShadow receiveShadow onClick={e=>{e.stopPropagation();worldTargets.get('south-yard-feed')?.activate();}}/>;
 }

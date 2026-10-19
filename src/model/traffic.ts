@@ -2,7 +2,7 @@ import type {Dimensions} from './types';
 import {reactions} from './encounters';
 import {landmarks} from './expedition';
 export type RoutePoint={x:number;z:number};
-export type TrafficActor={id:string;x:number;z:number;yaw:number;w:number;d:number;kind:'car'|'van'|'trike'|'ebike'|'person';distance:number;route:RoutePoint[];speed:number;pausedUntil:number;claimed?:boolean;velocity?:number;nextPause?:number;direction?:number;reactionUntil?:number;activity?:'walk'|'wait'|'drive'|'flee'|'stagger'};
+export type TrafficActor={height?:number;id:string;x:number;z:number;yaw:number;w:number;d:number;kind:'car'|'van'|'trike'|'ebike'|'person';distance:number;route:RoutePoint[];speed:number;pausedUntil:number;claimed?:boolean;velocity?:number;nextPause?:number;direction?:number;reactionUntil?:number;activity?:'walk'|'wait'|'drive'|'flee'|'stagger'};
 export const trafficActors=new Map<string,TrafficActor>();
 export function routeLength(route:RoutePoint[]){return route.reduce((s,a,i)=>{const b=route[(i+1)%route.length];return s+Math.hypot(b.x-a.x,b.z-a.z);},0);}
 export function routePosition(route:RoutePoint[],distance:number){const total=routeLength(route);let t=(distance%total+total)%total;for(let i=0;i<route.length;i++){const a=route[i],b=route[(i+1)%route.length],length=Math.hypot(b.x-a.x,b.z-a.z);if(t<=length)return{x:a.x+(b.x-a.x)*t/length,z:a.z+(b.z-a.z)*t/length,yaw:Math.atan2(b.x-a.x,b.z-a.z)};t-=length;}return{...route[0],yaw:0};}
@@ -26,7 +26,7 @@ export function advanceTraffic(a:TrafficActor,dt:number,player?:(RoutePoint&{rad
  a.distance+=a.velocity*dt*direction;const next=routePosition(a.route,a.distance);if(direction<0)next.yaw+=Math.PI;Object.assign(a,next);return true;
 }
 
-export function createOuterTraffic():TrafficActor[]{const r:TrafficActor[]=[];const route=[{x:-710,z:258},{x:1398,z:258},{x:1398,z:1658},{x:-710,z:1658},{x:-710,z:262},{x:1402,z:262},{x:1402,z:1662},{x:-714,z:1662},{x:-714,z:258}];
+export function createOuterTraffic():TrafficActor[]{const r:TrafficActor[]=[];const route=[{x:-710,z:568},{x:1398,z:568},{x:1398,z:1658},{x:-710,z:1658},{x:-710,z:572},{x:1402,z:572},{x:1402,z:1662},{x:-714,z:1662},{x:-714,z:568}];
  for(let i=0;i<14;i++)r.push({id:'traffic-outer-'+i,route,distance:i*routeLength(route)/14,kind:i%4===0?'van':'car',speed:12+i%4,w:1.78,d:4.2,pausedUntil:0,...routePosition(route,i*routeLength(route)/14)});
  for(const l of landmarks)r.push({id:'traffic-parked-'+l.id,route:[l.arrival,{x:l.arrival.x+1,z:l.arrival.z}],distance:0,kind:l.id==='pisa'?'ebike':'car',speed:0,w:l.id==='pisa'?.6:1.78,d:l.id==='pisa'?1.8:4.2,pausedUntil:0,claimed:true,x:l.arrival.x+6,z:l.arrival.z,yaw:Math.PI/2});
  return r;}

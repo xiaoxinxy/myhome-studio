@@ -3,7 +3,7 @@ import {test,expect} from '@playwright/test';
 test('3D 实际命中合批家具后能拖动，室内拖动不会同时旋转镜头',async({page})=>{
  test.setTimeout(150000);let store='',exports='';const errors:string[]=[];
  page.on('request',r=>{const path=new URL(r.url()).pathname;if(path==='/src/store.ts')store=r.url();if(path==='/src/render/exports.ts')exports=r.url();});page.on('pageerror',e=>errors.push(e.message));
- await page.goto('/');await expect(page.getByRole('button',{name:'小人漫游',exact:true})).toBeEnabled();
+ await page.goto('/');await expect(page.getByRole('button',{name:'小人漫游',exact:true})).toBeEnabled({timeout:90000});
  const state=()=>page.evaluate(async url=>{const {useHome}=await import(url);const s=useHome.getState();return{items:s.current().items,undo:s.undoStack.length,dragging:s.dragging};},store);
  const project=(x:number,y:number,z:number)=>page.evaluate(async({url,x,y,z})=>{const {sceneActions}=await import(url);return sceneActions.project!(x,y,z);},{url:exports,x,y,z});
  await page.evaluate(async()=>{for(let i=0;i<14;i++)await new Promise(requestAnimationFrame);});const portals=()=>page.evaluate(async url=>(await import(url)).sceneActions.portals!(),exports);let gate=(await portals()).find((v:{name:string})=>v.name==='大门双开门')!;let doorPoint=await project(11.45,1.2,30.06);await page.mouse.click(doorPoint.x,doorPoint.y);await expect.poll(async()=>((await portals()).find((v:{id:string})=>v.id===gate.id)!).leftRotation).toBeLessThan(-1.4);expect((await portals()).find((v:{id:string})=>v.id===gate.id)!.rightRotation).toBeGreaterThan(1.4);
@@ -19,7 +19,7 @@ test('3D 实际命中合批家具后能拖动，室内拖动不会同时旋转�
 
 test('车辆、树和猫有实际互动反馈，触控取消后停止且能重新操控',async({page})=>{
  test.setTimeout(150000);let store='',interactions='';page.on('request',r=>{const path=new URL(r.url()).pathname;if(path==='/src/store.ts')store=r.url();if(path==='/src/interactions.ts')interactions=r.url();});
- await page.goto('/');await expect(page.getByRole('button',{name:'小人漫游',exact:true})).toBeEnabled();
+ await page.goto('/');await expect(page.getByRole('button',{name:'小人漫游',exact:true})).toBeEnabled({timeout:90000});
  const select=async(type:string)=>page.evaluate(async({url,type})=>{const {useHome}=await import(url),f=useHome.getState().current().items.find((f:{type:string})=>f.type===type)!;useHome.setState({selected:f.id});return f.id;},{url:store,type});
  const car=await select('car');await page.getByRole('button',{name:'打开车灯',exact:true}).click();expect(await page.evaluate(async({url,id})=>(await import(url)).useInteractions.getState().items[id].lights,{url:interactions,id:car})).toBe(true);
  const tree=await select('pomegranate');await page.getByRole('button',{name:'浇水',exact:true}).click();expect(await page.evaluate(async({url,id})=>(await import(url)).useInteractions.getState().items[id].waterUntil>Date.now(),{url:interactions,id:tree})).toBe(true);

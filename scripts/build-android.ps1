@@ -2,6 +2,21 @@
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path $PSScriptRoot -Parent
 if ($projectRoot -match '[^\x00-\x7F]') {
+    # Vite resolves mapped drive paths back to their Unicode location. Build
+    # web assets at the real root; only Android's native tools need ASCII paths.
+    if (!$SkipWebBuild) {
+        Push-Location -LiteralPath $projectRoot
+        $previousNativeMode = $env:VITE_NATIVE_APP
+        try {
+            $env:VITE_NATIVE_APP = '1'
+            & npm.cmd run build
+            if ($LASTEXITCODE -ne 0) { throw 'Web build failed.' }
+        } finally {
+            Pop-Location
+            $env:VITE_NATIVE_APP = $previousNativeMode
+        }
+        $SkipWebBuild = $true
+    }
     # AAPT2 on Windows cannot reliably open Unicode absolute paths. Map this
     # existing directory to an unused drive for the duration of the build.
     $buildDrive = @('Q:','R:','S:','T:','U:','V:','W:','X:','Y:','Z:') | Where-Object { !(Test-Path "$_\") } | Select-Object -First 1

@@ -1,3 +1,4 @@
+import {facilityItems,facilityRoom,facilityLayout} from './facilities';
 import {publicHome} from './publicHome';
 import {neighborhood,neighborHouse} from './neighborhood';
 import {catalog,existingPalette} from './catalog';
@@ -44,6 +45,6 @@ export function village(d:Dimensions):VillageHome[]{
   return{n,layout,plan};
  });cache.set(key,homes);return homes;
 }
-export function worldItems(p:Plan){return [...p.items,...village(p.dimensions).flatMap(h=>h.plan.items)];}
-export function worldRoom(p:Plan,id:string){for(const h of village(p.dimensions)){const r=h.layout.rooms.find(r=>r.id===id);if(r)return{room:r,layout:h.layout};}return null;}
+export function worldItems(p:Plan){return [...p.items,...village(p.dimensions).flatMap(h=>h.plan.items),...facilityItems()];}
+export function worldRoom(p:Plan,id:string){const f=facilityRoom(id);if(f)return{room:f,layout:facilityLayout()};for(const h of village(p.dimensions)){const r=h.layout.rooms.find(r=>r.id===id);if(r)return{room:r,layout:h.layout};}return null;}
 export function villageRoomAt(x:number,z:number,d:Dimensions){for(const h of village(d)){const r=h.layout.rooms.find(r=>r.kind!=='yard'&&x>=r.x&&x<=r.x+r.w&&z>=r.z&&z<=r.z+r.d);if(r)return r;}return undefined;}

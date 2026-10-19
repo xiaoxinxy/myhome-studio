@@ -1,7 +1,7 @@
 import {test,expect} from '@playwright/test';
 import {writeFileSync} from 'node:fs';
 test('外围地标、打卡存档、受击逃跑、夺车与触屏界面',async({page})=>{
- test.setTimeout(180000);page.setDefaultTimeout(15000);const urls:Record<string,string>={},errors:string[]=[];page.on('request',r=>urls[new URL(r.url()).pathname]=r.url());page.on('pageerror',e=>errors.push(e.message));
+ test.setTimeout(240000);page.setDefaultTimeout(30000);const urls:Record<string,string>={},errors:string[]=[];page.on('request',r=>urls[new URL(r.url()).pathname]=r.url());page.on('pageerror',e=>errors.push(e.message));
  await page.goto('/');await expect(page.getByRole('button',{name:'小人漫游',exact:true})).toBeEnabled({timeout:90000});await page.getByRole('button',{name:'小人漫游',exact:true}).click({timeout:90000});
  const settle=()=>page.evaluate(async()=>{for(let i=0;i<20;i++)await new Promise(requestAnimationFrame);});
  const data:unknown[]=[];

@@ -1,0 +1,481 @@
+{
+  "actors": [
+    {
+      "id": "npc-neighbor-0",
+      "occupation": "打理院子",
+      "activity": "sweep"
+    },
+    {
+      "id": "npc-neighbor-0-family",
+      "occupation": "手工活",
+      "activity": "talk"
+    },
+    {
+      "id": "npc-neighbor-1",
+      "occupation": "园艺与家务",
+      "activity": "work"
+    },
+    {
+      "id": "npc-neighbor-1-family",
+      "occupation": "在家休息",
+      "activity": "talk"
+    },
+    {
+      "id": "npc-neighbor-2",
+      "occupation": "打理院子",
+      "activity": "sweep"
+    },
+    {
+      "id": "npc-neighbor-2-family",
+      "occupation": "在家休息",
+      "activity": "talk"
+    },
+    {
+      "id": "npc-neighbor-3",
+      "occupation": "园艺与家务",
+      "activity": "walk"
+    },
+    {
+      "id": "npc-neighbor-3-family",
+      "occupation": "手工活",
+      "activity": "talk"
+    },
+    {
+      "id": "npc-neighbor-4",
+      "occupation": "打理院子",
+      "activity": "walk"
+    },
+    {
+      "id": "npc-neighbor-4-family",
+      "occupation": "在家休息",
+      "activity": "walk"
+    },
+    {
+      "id": "npc-neighbor-5",
+      "occupation": "园艺与家务",
+      "activity": "walk"
+    },
+    {
+      "id": "npc-neighbor-5-family",
+      "occupation": "在家休息",
+      "activity": "walk"
+    },
+    {
+      "id": "npc-neighbor-6",
+      "occupation": "打理院子",
+      "activity": "walk"
+    },
+    {
+      "id": "npc-neighbor-6-family",
+      "occupation": "手工活",
+      "activity": "talk"
+    },
+    {
+      "id": "npc-neighbor-7",
+      "occupation": "园艺与家务",
+      "activity": "walk"
+    },
+    {
+      "id": "npc-neighbor-7-family",
+      "occupation": "在家休息",
+      "activity": "talk"
+    },
+    {
+      "id": "npc-neighbor-8",
+      "occupation": "打理院子",
+      "activity": "walk"
+    },
+    {
+      "id": "npc-neighbor-8-family",
+      "occupation": "在家休息",
+      "activity": "talk"
+    },
+    {
+      "id": "npc-neighbor-9",
+      "occupation": "园艺与家务",
+      "activity": "walk"
+    },
+    {
+      "id": "npc-neighbor-9-family",
+      "occupation": "手工活",
+      "activity": "talk"
+    },
+    {
+      "id": "npc-neighbor-10",
+      "occupation": "打理院子",
+      "activity": "sweep"
+    },
+    {
+      "id": "npc-neighbor-10-family",
+      "occupation": "在家休息",
+      "activity": "walk"
+    },
+    {
+      "id": "npc-neighbor-11",
+      "occupation": "园艺与家务",
+      "activity": "work"
+    },
+    {
+      "id": "npc-neighbor-11-family",
+      "occupation": "在家休息",
+      "activity": "walk"
+    },
+    {
+      "id": "npc-clinic-doctor",
+      "occupation": "村医",
+      "activity": "walk"
+    },
+    {
+      "id": "npc-clinic-patient",
+      "occupation": "等候问诊",
+      "activity": "sit"
+    },
+    {
+      "id": "npc-waiting-0",
+      "occupation": "候诊",
+      "activity": "sit"
+    },
+    {
+      "id": "npc-waiting-1",
+      "occupation": "候诊",
+      "activity": "sit"
+    },
+    {
+      "id": "npc-clinic-rest",
+      "occupation": "观察休息",
+      "activity": "lie"
+    },
+    {
+      "id": "npc-staff-community-0",
+      "occupation": "杂货铺店主",
+      "activity": "sit"
+    },
+    {
+      "id": "npc-staff-community-1",
+      "occupation": "便民服务",
+      "activity": "sit"
+    },
+    {
+      "id": "npc-staff-community-3",
+      "occupation": "理发师",
+      "activity": "sit"
+    },
+    {
+      "id": "npc-play-0",
+      "occupation": "放学玩耍",
+      "activity": "play"
+    },
+    {
+      "id": "npc-play-1",
+      "occupation": "放学玩耍",
+      "activity": "play"
+    },
+    {
+      "id": "npc-play-2",
+      "occupation": "放学玩耍",
+      "activity": "play"
+    },
+    {
+      "id": "npc-play-3",
+      "occupation": "放学玩耍",
+      "activity": "play"
+    },
+    {
+      "id": "npc-square-0",
+      "occupation": "坐着下棋聊天",
+      "activity": "sit"
+    },
+    {
+      "id": "npc-square-1",
+      "occupation": "坐着下棋聊天",
+      "activity": "talk"
+    },
+    {
+      "id": "npc-square-2",
+      "occupation": "坐着下棋聊天",
+      "activity": "sit"
+    },
+    {
+      "id": "npc-square-3",
+      "occupation": "坐着下棋聊天",
+      "activity": "talk"
+    },
+    {
+      "id": "npc-tea-0",
+      "occupation": "喝茶聊天",
+      "activity": "sit"
+    },
+    {
+      "id": "npc-tea-1",
+      "occupation": "喝茶聊天",
+      "activity": "sit"
+    },
+    {
+      "id": "npc-tea-2",
+      "occupation": "喝茶聊天",
+      "activity": "sit"
+    },
+    {
+      "id": "npc-facility-depot",
+      "occupation": "村庄服务人员",
+      "activity": "sit"
+    },
+    {
+      "id": "npc-facility-post",
+      "occupation": "驿站工作人员",
+      "activity": "sit"
+    },
+    {
+      "id": "npc-facility-school",
+      "occupation": "文化课老师",
+      "activity": "sit"
+    },
+    {
+      "id": "npc-student-0",
+      "occupation": "阅读与上课",
+      "activity": "sit"
+    },
+    {
+      "id": "npc-student-1",
+      "occupation": "阅读与上课",
+      "activity": "sit"
+    },
+    {
+      "id": "npc-student-2",
+      "occupation": "阅读与上课",
+      "activity": "sit"
+    },
+    {
+      "id": "npc-student-3",
+      "occupation": "阅读与上课",
+      "activity": "sit"
+    },
+    {
+      "id": "npc-facility-ticket-pyramid",
+      "occupation": "景区售票员",
+      "activity": "sit"
+    },
+    {
+      "id": "npc-facility-ticket-eiffel",
+      "occupation": "景区售票员",
+      "activity": "sit"
+    },
+    {
+      "id": "npc-facility-ticket-pisa",
+      "occupation": "景区售票员",
+      "activity": "sit"
+    },
+    {
+      "id": "npc-facility-ticket-louvre",
+      "occupation": "景区售票员",
+      "activity": "sit"
+    },
+    {
+      "id": "npc-facility-ticket-tiananmen",
+      "occupation": "景区售票员",
+      "activity": "sit"
+    },
+    {
+      "id": "npc-tourist-pyramid-0",
+      "occupation": "景区讲解员",
+      "activity": "talk"
+    },
+    {
+      "id": "npc-tourist-pyramid-1",
+      "occupation": "游客",
+      "activity": "stand"
+    },
+    {
+      "id": "npc-tourist-pyramid-2",
+      "occupation": "游客",
+      "activity": "stand"
+    },
+    {
+      "id": "npc-tourist-eiffel-0",
+      "occupation": "景区讲解员",
+      "activity": "talk"
+    },
+    {
+      "id": "npc-tourist-eiffel-1",
+      "occupation": "游客",
+      "activity": "walk"
+    },
+    {
+      "id": "npc-tourist-eiffel-2",
+      "occupation": "游客",
+      "activity": "walk"
+    },
+    {
+      "id": "npc-tourist-pisa-0",
+      "occupation": "景区讲解员",
+      "activity": "walk"
+    },
+    {
+      "id": "npc-tourist-pisa-1",
+      "occupation": "游客",
+      "activity": "walk"
+    },
+    {
+      "id": "npc-tourist-pisa-2",
+      "occupation": "游客",
+      "activity": "stand"
+    },
+    {
+      "id": "npc-tourist-louvre-0",
+      "occupation": "景区讲解员",
+      "activity": "talk"
+    },
+    {
+      "id": "npc-tourist-louvre-1",
+      "occupation": "游客",
+      "activity": "stand"
+    },
+    {
+      "id": "npc-tourist-louvre-2",
+      "occupation": "游客",
+      "activity": "stand"
+    },
+    {
+      "id": "npc-tourist-tiananmen-0",
+      "occupation": "景区讲解员",
+      "activity": "talk"
+    },
+    {
+      "id": "npc-tourist-tiananmen-1",
+      "occupation": "游客",
+      "activity": "stand"
+    },
+    {
+      "id": "npc-tourist-tiananmen-2",
+      "occupation": "游客",
+      "activity": "walk"
+    },
+    {
+      "id": "traffic-person-0",
+      "occupation": "赶集与办事",
+      "activity": "walk"
+    },
+    {
+      "id": "traffic-person-1",
+      "occupation": "赶集与办事",
+      "activity": "walk"
+    },
+    {
+      "id": "traffic-person-2",
+      "occupation": "赶集与办事",
+      "activity": "walk"
+    },
+    {
+      "id": "traffic-person-3",
+      "occupation": "赶集与办事",
+      "activity": "walk"
+    },
+    {
+      "id": "traffic-person-4",
+      "occupation": "赶集与办事",
+      "activity": "walk"
+    },
+    {
+      "id": "traffic-person-5",
+      "occupation": "赶集与办事",
+      "activity": "walk"
+    },
+    {
+      "id": "traffic-person-6",
+      "occupation": "赶集与办事",
+      "activity": "walk"
+    },
+    {
+      "id": "traffic-person-7",
+      "occupation": "赶集与办事",
+      "activity": "walk"
+    },
+    {
+      "id": "traffic-person-8",
+      "occupation": "赶集与办事",
+      "activity": "walk"
+    },
+    {
+      "id": "traffic-person-9",
+      "occupation": "赶集与办事",
+      "activity": "walk"
+    },
+    {
+      "id": "traffic-person-10",
+      "occupation": "赶集与办事",
+      "activity": "walk"
+    },
+    {
+      "id": "traffic-person-11",
+      "occupation": "赶集与办事",
+      "activity": "walk"
+    },
+    {
+      "id": "traffic-person-12",
+      "occupation": "赶集与办事",
+      "activity": "walk"
+    },
+    {
+      "id": "traffic-person-13",
+      "occupation": "赶集与办事",
+      "activity": "walk"
+    },
+    {
+      "id": "traffic-person-14",
+      "occupation": "赶集与办事",
+      "activity": "walk"
+    },
+    {
+      "id": "traffic-person-15",
+      "occupation": "赶集与办事",
+      "activity": "walk"
+    },
+    {
+      "id": "traffic-person-16",
+      "occupation": "赶集与办事",
+      "activity": "walk"
+    },
+    {
+      "id": "traffic-person-17",
+      "occupation": "赶集与办事",
+      "activity": "walk"
+    },
+    {
+      "id": "traffic-person-18",
+      "occupation": "赶集与办事",
+      "activity": "walk"
+    },
+    {
+      "id": "traffic-person-19",
+      "occupation": "赶集与办事",
+      "activity": "walk"
+    },
+    {
+      "id": "traffic-person-20",
+      "occupation": "赶集与办事",
+      "activity": "walk"
+    },
+    {
+      "id": "traffic-person-21",
+      "occupation": "赶集与办事",
+      "activity": "walk"
+    },
+    {
+      "id": "traffic-person-22",
+      "occupation": "赶集与办事",
+      "activity": "walk"
+    },
+    {
+      "id": "traffic-person-23",
+      "occupation": "赶集与办事",
+      "activity": "walk"
+    }
+  ],
+  "jump": {
+    "peak": 0.8049999999999998,
+    "y": 0,
+    "grounded": true
+  },
+  "busMovement": 3.1281534489216725,
+  "errors": []
+}

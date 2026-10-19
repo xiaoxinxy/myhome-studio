@@ -2,7 +2,8 @@ import {neighborhood} from './neighborhood';
 import {outerRoads} from './expedition';
 import type {Dimensions} from './types';
 export type Road={id:string;ax:number;az:number;bx:number;bz:number;width:number;surface:'asphalt'|'earth'};
-export function villageRoads(d:Dimensions):Road[]{const A=d.depth+6.8,B=d.depth+68.8,C=d.depth+114.8;return [
+const roadCache=new WeakMap<Dimensions,Road[]>();
+export function villageRoads(d:Dimensions):Road[]{const cached=roadCache.get(d);if(cached)return cached;const A=d.depth+6.8,B=d.depth+68.8,C=d.depth+114.8;const roads:Road[]=[
  {id:'main',ax:-100,az:A,bx:d.width+100,bz:A,width:7.4,surface:'asphalt'},
  {id:'back',ax:-94,az:B,bx:d.width+90,bz:B,width:5.6,surface:'asphalt'},
  {id:'market',ax:-68,az:C,bx:92,bz:C,width:5,surface:'asphalt'},
@@ -11,7 +12,7 @@ export function villageRoads(d:Dimensions):Road[]{const A=d.depth+6.8,B=d.depth+
  {id:'market-link',ax:55,az:B,bx:55,bz:C,width:3.4,surface:'asphalt'},
  {id:'west-alley',ax:-64,az:A,bx:-64,bz:A+15,width:2.8,surface:'asphalt'},
  {id:'east-alley',ax:86,az:B,bx:86,bz:B+14,width:2.8,surface:'asphalt'},
- {id:'field-track',ax:-2,az:C,bx:-2,bz:d.depth+155,width:3,surface:'earth'},...outerRoads()];}
+ {id:'field-track',ax:-2,az:C,bx:-2,bz:d.depth+155,width:3,surface:'earth'},...outerRoads()];roadCache.set(d,roads);return roads;}
 export function roadRect(r:Road,pad=0){return {x:Math.min(r.ax,r.bx)-(r.ax===r.bx?r.width/2+pad:0),z:Math.min(r.az,r.bz)-(r.az===r.bz?r.width/2+pad:0),w:Math.abs(r.bx-r.ax)+(r.ax===r.bx?r.width+pad*2:0),d:Math.abs(r.bz-r.az)+(r.az===r.bz?r.width+pad*2:0)};}
 export function onRoad(x:number,z:number,r:Road,pad=0){const b=roadRect(r,pad);return x>=b.x&&x<=b.x+b.w&&z>=b.z&&z<=b.z+b.d;}
 export function junctions(d:Dimensions){const roads=villageRoads(d),points:{x:number;z:number;degree:number}[]=[];for(const a of roads)for(const b of roads){if(a.id>=b.id||(a.ax===a.bx)===(b.ax===b.bx))continue;const h=a.az===a.bz?a:b,v=a.ax===a.bx?a:b,x=v.ax,z=h.az;if(x<Math.min(h.ax,h.bx)||x>Math.max(h.ax,h.bx)||z<Math.min(v.az,v.bz)||z>Math.max(v.az,v.bz))continue;const degree=Number(x>Math.min(h.ax,h.bx))+Number(x<Math.max(h.ax,h.bx))+Number(z>Math.min(v.az,v.bz))+Number(z<Math.max(v.az,v.bz));points.push({x,z,degree});}return points;}

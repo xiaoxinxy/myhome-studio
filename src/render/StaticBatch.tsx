@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
 import {batchSurface} from './materials';
 
-type BatchRecord={originals:THREE.Mesh[];batches:THREE.Mesh[];frozen:Map<THREE.Object3D,boolean>};
+type BatchRecord={originals:THREE.Mesh[];batches:THREE.Mesh[];frozen:Map<THREE.Object3D,boolean>;detached:{parent:THREE.Object3D;object:THREE.Object3D}[]};
 const records=new Set<BatchRecord>();
 const subsets=new Map<string,THREE.BufferGeometry>();
 const colorMaterials=new Map<string,THREE.MeshStandardMaterial>();
@@ -27,7 +27,7 @@ export function StaticBatch({children,revision}:{children:ReactNode;revision:str
  const root=useRef<THREE.Group>(null),source=useRef<THREE.Group>(null);
  useLayoutEffect(()=>{
   if(!root.current||!source.current)return;
-  const container=root.current,record:BatchRecord={originals:[],batches:[],frozen:new Map()};
+  const container=root.current,record:BatchRecord={originals:[],batches:[],frozen:new Map(),detached:[]};
   container.updateWorldMatrix(true,true);const inverse=new THREE.Matrix4().copy(container.matrixWorld).invert();
   type Entry={mesh:THREE.Mesh;matrix:THREE.Matrix4;geometry:THREE.BufferGeometry;material:THREE.Material};
   const buckets=new Map<string,Entry[]>();
@@ -53,13 +53,17 @@ export function StaticBatch({children,revision}:{children:ReactNode;revision:str
    entries.forEach((entry,i)=>{batch.setMatrixAt(i,entry.matrix);const color=batchMaterial(entry.material).color;if(color)batch.setColorAt(i,color);});batch.instanceMatrix.needsUpdate=true;if(batch.instanceColor)batch.instanceColor.needsUpdate=true;batch.computeBoundingSphere();container.add(batch);record.batches.push(batch);
   }
   source.current.traverse(object=>{let parent:THREE.Object3D|null=object;while(parent&&parent!==source.current){if(parent.userData.keepInteractive)return;parent=parent.parent;}record.frozen.set(object,object.matrixAutoUpdate);object.updateMatrix();object.matrixAutoUpdate=false;});
-  record.originals.forEach(mesh=>{mesh.visible=false;});records.add(record);
-  return()=>{records.delete(record);record.frozen.forEach((auto,o)=>{o.matrixAutoUpdate=auto;});record.originals.forEach(mesh=>{mesh.visible=true;});record.batches.forEach(batch=>{container.remove(batch);if(batch.userData.ownedBatchGeometry)batch.geometry.dispose();else(batch as THREE.InstancedMesh).dispose();});};
+  record.originals.forEach(mesh=>{mesh.visible=false;});
+  // Remove maximal fully batched branches from the live scene graph. Merely
+  // setting visible=false still makes Three traverse/update every original node.
+  const captured=new Set<THREE.Object3D>(record.originals),canDetach=(o:THREE.Object3D):boolean=>{if(o.userData.keepInteractive)return false;if((o as THREE.Mesh).isMesh)return captured.has(o);return o.type==='Group'&&o.children.every(canDetach);};
+  const prune=(parent:THREE.Object3D)=>{for(const object of [...parent.children]){if(canDetach(object)){record.detached.push({parent,object});parent.remove(object);}else if(!(object as THREE.Mesh).isMesh&&!object.userData.keepInteractive)prune(object);}};prune(source.current);records.add(record);
+  return()=>{records.delete(record);record.detached.forEach(d=>d.parent.add(d.object));record.frozen.forEach((auto,o)=>{o.matrixAutoUpdate=auto;});record.originals.forEach(mesh=>{mesh.visible=true;});record.batches.forEach(batch=>{container.remove(batch);if(batch.userData.ownedBatchGeometry)batch.geometry.dispose();else(batch as THREE.InstancedMesh).dispose();});};
  },[revision]);
  return <group ref={root}><group ref={source}>{children}</group></group>;
 }
 
 export async function exportOriginalMeshes<T>(action:()=>Promise<T>):Promise<T>{
- for(const record of records){record.originals.forEach(mesh=>{mesh.visible=true;});record.batches.forEach(batch=>{batch.visible=false;});}
- try{return await action();}finally{for(const record of records){record.originals.forEach(mesh=>{mesh.visible=false;});record.batches.forEach(batch=>{batch.visible=true;});}}
+ for(const record of records){record.detached.forEach(d=>d.parent.add(d.object));record.originals.forEach(mesh=>{mesh.visible=true;});record.batches.forEach(batch=>{batch.visible=false;});}
+ try{return await action();}finally{for(const record of records){record.originals.forEach(mesh=>{mesh.visible=false;});record.detached.forEach(d=>d.parent.remove(d.object));record.batches.forEach(batch=>{batch.visible=true;});}}
 }

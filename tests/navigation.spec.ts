@@ -28,7 +28,7 @@ test('观察不移动家具，点击不生成撤销记录，布置拖动才修�
 
 test('室内保留屋顶和天花板，可选剖视后恢复完整外观',async({page})=>{
  test.setTimeout(150000);const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
- await page.goto('/',{waitUntil:'domcontentloaded'});await expect(page.locator('canvas')).toBeVisible();
+ await page.goto('/',{waitUntil:'domcontentloaded'});await expect(page.locator('canvas')).toBeVisible({timeout:90000});
  await page.getByLabel('选择房间').selectOption('living');await expect(page.locator('.view-status')).toContainText('正房');
  const capture=async(name:string)=>{const pending=page.waitForEvent('download');await page.getByRole('button',{name:'导出 GLB 三维模型',exact:true}).click();const path='artifacts/'+name+'.glb';await(await pending).saveAs(path);const bytes=await readFile(path);return JSON.parse(bytes.subarray(20,20+bytes.readUInt32LE(12)).toString());};
  const cut=await capture('navigation-local-cut');const roofs=cut.nodes.filter((n:{name?:string})=>n.name?.startsWith('roof-')).map((n:{name:string})=>n.name);

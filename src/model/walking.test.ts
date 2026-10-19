@@ -1,3 +1,5 @@
+import {trafficActors} from './traffic';
+import {buildLayout} from './layout';
 import {expect,it} from 'vitest';
 import {makePlan} from './catalog';
 import {makeWalkWorld,moveWalker,walkSpawn,walkHeight,walkable,roomAt,maxWalkStep,cameraBoom} from './walking';
@@ -48,5 +50,10 @@ it('默认完整家具布局从大门步行可达全部房间和两车棚',()=>{
  for(let head=0;head<queue.length;head++){const [ix,iz]=queue[head],x=ix*step,z=iz*step;const room=roomAt(x,z,w.layout);if(room)reached.add(room.id);
   for(const [dx,dz] of [[1,0],[-1,0],[0,1],[0,-1]]){const nx=ix+dx,nz=iz+dz,key=nx+','+nz;if(nx<1||nx*step>W-.18||nz<1||nz*step>D+1||visited.has(key))continue;visited.add(key);const wx=nx*step,wz=nz*step;if(walkable(wx,wz,w)&&Math.abs(walkHeight(wx,wz,w)-walkHeight(x,z,w))<=maxWalkStep)queue.push([nx,nz]);}
  }
- const missing=w.layout.rooms.filter(r=>!reached.has(r.id)).map(r=>r.name);expect(missing).toEqual([]);
+ const missing=buildLayout(w.plan.dimensions).rooms.filter(r=>!reached.has(r.id)).map(r=>r.name);expect(missing).toEqual([]);
+});
+
+it('跟随镜头避开大巴上半部，长车尾部也参与附近查询',()=>{
+ const w=makeWalkWorld(makePlan()),bus={id:'camera-bus',x:500,z:600,yaw:0,w:2.55,d:10.2,height:3.3,kind:'van' as const,distance:0,route:[],speed:0,pausedUntil:0};trafficActors.set(bus.id,bus);
+ try{expect(cameraBoom({x:500,y:2.7,z:593.5},{x:500,y:2.7,z:596},w)).toBeLessThan(1);expect(cameraBoom({x:500,y:3.8,z:593.5},{x:500,y:3.8,z:596},w)).toBe(1);}finally{trafficActors.delete(bus.id);}
 });

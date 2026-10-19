@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-export type Surface='facade'|'brick'|'paving'|'tile'|'wood'|'roof'|'metal'|'fabric'|'asphalt';
+export type Surface='facade'|'brick'|'paving'|'tile'|'wood'|'roof'|'metal'|'fabric'|'asphalt'|'grass'|'soil'|'sand'|'stone';
 const textures=new Map<string,THREE.Texture>();
 const materials=new Map<string,THREE.MeshStandardMaterial>();
 export const unitBox=new THREE.BoxGeometry(1,1,1);
@@ -10,7 +10,7 @@ function canvasMap(kind:Surface,color:string){const key=kind+color;if(textures.h
  if(['facade','brick','paving','tile','roof'].includes(kind)){
   const rows=kind==='facade'?12:kind==='roof'?10:kind==='paving'?8:kind==='tile'?2:8;const columns=kind==='facade'?4:kind==='roof'?8:kind==='tile'?2:4;const h=256/rows,w=256/columns;
   for(let y=0;y<rows;y++){const offset=kind==='tile'||kind==='roof'?0:(y%2)*w/2;for(let x=-1;x<columns+1;x++){ctx.fillStyle=`rgba(${rand()>.5?'255,255,240':'25,30,23'},${.025+rand()*(kind==='facade'?.22:.15)})`;ctx.fillRect(x*w+offset+1,y*h+1,w-2,h-2);ctx.strokeStyle=kind==='facade'?'rgba(245,246,235,.8)':'rgba(50,50,40,.18)';ctx.lineWidth=kind==='facade'?2:1.2;ctx.strokeRect(x*w+offset+1,y*h+1,w-2,h-2);if(kind==='facade'){ctx.fillStyle=rand()>.5?'#8b9a95':'#b3c0b6';const len=8+rand()*16;ctx.fillRect(x*w+offset+rand()*(w-len),y*h+4,len,h*.34);}if(kind==='roof'){ctx.fillStyle='rgba(255,245,220,.16)';ctx.fillRect(x*w+offset+2,y*h+2,w*.2,h-3);}}}
- }else if(kind==='wood'){for(let i=0;i<180;i++){ctx.strokeStyle=`rgba(40,28,15,${rand()*.13})`;const y=rand()*256;ctx.beginPath();ctx.moveTo(0,y);ctx.bezierCurveTo(75,y+rand()*3,175,y-rand()*3,256,y+rand()*3);ctx.stroke();}ctx.strokeStyle='rgba(65,43,20,.15)';for(let y=0;y<256;y+=32){ctx.strokeRect((y%64)*2,y,256,32);}}
+ }else if(['grass','soil','sand','stone'].includes(kind)){for(let i=0;i<14000;i++){ctx.fillStyle=i%3===0?'rgba(45,53,28,.16)':'rgba(222,224,168,.14)';const x=rand()*256,y=rand()*256;ctx.fillRect(x,y,.6+rand()*1.4,kind==='grass'?2+rand()*4:1.4);}if(kind==='stone'){ctx.strokeStyle='rgba(70,65,48,.26)';for(let y=0;y<256;y+=24)for(let x=-1;x<5;x++)ctx.strokeRect(x*70+(y%48?35:0),y,70,24);}}else if(kind==='wood'){for(let i=0;i<180;i++){ctx.strokeStyle=`rgba(40,28,15,${rand()*.13})`;const y=rand()*256;ctx.beginPath();ctx.moveTo(0,y);ctx.bezierCurveTo(75,y+rand()*3,175,y-rand()*3,256,y+rand()*3);ctx.stroke();}ctx.strokeStyle='rgba(65,43,20,.15)';for(let y=0;y<256;y+=32){ctx.strokeRect((y%64)*2,y,256,32);}}
  else if(kind==='metal'){for(let x=0;x<256;x+=16){ctx.fillStyle='rgba(10,30,35,.18)';ctx.fillRect(x,0,3,256);ctx.fillStyle='rgba(255,255,255,.22)';ctx.fillRect(x+3,0,3,256);}}
  else if(kind==='asphalt'){for(let i=0;i<18000;i++){ctx.fillStyle=i%2?'rgba(235,239,223,.09)':'rgba(20,30,24,.13)';ctx.fillRect(rand()*256,rand()*256,.4+rand(),.4+rand());}}else{for(let i=0;i<256;i+=3){ctx.strokeStyle='rgba(255,255,240,.07)';ctx.beginPath();ctx.moveTo(0,i);ctx.lineTo(256,i);ctx.moveTo(i,0);ctx.lineTo(i,256);ctx.stroke();}}
  for(let i=0;i<6000;i++){ctx.fillStyle=`rgba(0,0,0,${rand()*.025})`;ctx.fillRect(rand()*256,rand()*256,.35,.35);}
